@@ -96,7 +96,8 @@ class MyDataset(Dataset, Sized):
 def _create_shared_augmentation():
     return alb.Compose(
         [
-            alb.Flip(p=0.5),
+            alb.HorizontalFlip(p=0.5),
+            alb.VerticalFlip(p=0.5),
             alb.Rotate(limit=5, p=0.5),
         ],
         additional_targets={"image0": "image", "x_mask0": "mask"},

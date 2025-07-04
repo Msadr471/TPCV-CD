@@ -18,7 +18,7 @@ class ChangeClassifier(Module):
 
         self._retina = RetinaSimBlock(in_channels=3, out_channels=3, kernel_size=15)
 
-        # Load the pretrained backbone according to parameters:
+        # Load the weights backbone according to parameters:
         self._backbone = _get_backbone(
             bkbn_name, weights, output_layer_bkbn, freeze_backbone
         )

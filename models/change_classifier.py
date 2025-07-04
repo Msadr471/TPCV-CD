@@ -3,13 +3,14 @@ import torchvision
 from models.layers import MixingMaskAttentionBlock, PixelwiseLinear, UpMask, MixingBlock, RetinaSimBlock
 from torch import Tensor
 from torch.nn import Module, ModuleList, Sigmoid
+from torchvision.models import EfficientNet_B4_Weights
 
 
 class ChangeClassifier(Module):
     def __init__(
         self,
         bkbn_name="efficientnet_b4",
-        weights=True,
+        weights=EfficientNet_B4_Weights.DEFAULT,
         output_layer_bkbn="3",
         freeze_backbone=False,
     ):

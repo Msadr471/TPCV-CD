@@ -2,8 +2,9 @@
 
 # Install packages
 # pip install tensorboardX==2.6.2.2
-pip install tensorboardX
+# pip install tensorboardX
 pip install thop
+pip install albumentations
 
 # Print working dir
 pwd
@@ -19,26 +20,26 @@ fi
 mkdir -p /content/Data
 
 # Copy zip file
-cp "/content/drive/MyDrive/GoogleColabDrive/CustomDataset/Datasets/3DCD/3DCD.zip" /content/Data/
+cp "/content/drive/MyDrive/GoogleColabDrive/CustomDataset/Datasets/WHU/WHU-CD-256.zip" /content/Data/
 
 # Unzip only if not already done
-if [ ! -d /content/Data/3DCD ]; then
-    unzip /content/Data/3DCD.zip -d /content/Data/
+if [ ! -d /content/Data/WHU ]; then
+    unzip "/content/Data/WHU-CD-256.zip" -d /content/Data/
 else
     echo "Already unzipped 💁‍♂️"
 fi
 
 # Check the zip file
-ls -lh /content/Data/3DCD.zip
+ls -lh "/content/Data/WHU-CD-256.zip"
 
 # Compare checksums
-md5sum "/content/drive/MyDrive/GoogleColabDrive/CustomDataset/Datasets/3DCD/3DCD.zip"
-md5sum /content/Data/3DCD.zip
+md5sum "/content/drive/MyDrive/GoogleColabDrive/CustomDataset/Datasets/WHU/WHU-CD-256.zip"
+md5sum "/content/Data/WHU-CD-256.zip"
 
 # Remove Colab default stuff
 rm -rf /content/sample_data
 
 # Go to your repo folder
-cd /content/USSFC-Net
+cd "/content/TPCV-CD"
 pwd
 ls

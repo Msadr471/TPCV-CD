@@ -1,0 +1,14 @@
+digraph {
+	A [label="Input Image"]
+	B [label=RetinaSimBlock]
+	C [label=Backbone]
+	D1 [label=MixingBlocks]
+	D2 [label=UpMask]
+	E [label=PixelwiseLinear]
+	A -> B
+	B -> C
+	C -> D1
+	C -> D2
+	D1 -> E
+	D2 -> E
+}

@@ -20,21 +20,21 @@ fi
 mkdir -p /content/Data
 
 # Copy zip file
-cp "/content/drive/MyDrive/GoogleColabDrive/CustomDataset/Datasets/WHU/WHU-CD-256.zip" /content/Data/
+cp "/content/drive/MyDrive/GoogleColabDrive/CustomDataset/Custom_Dataset/Dataset.zip" /content/Data/
 
 # Unzip only if not already done
-if [ ! -d /content/Data/WHU ]; then
-    unzip "/content/Data/WHU-CD-256.zip" -d /content/Data/
+if [ ! -d /content/Data/Dataset ]; then
+    unzip "/content/Data/Dataset.zip" -d /content/Data/
 else
     echo "Already unzipped 💁‍♂️"
 fi
 
 # Check the zip file
-ls -lh "/content/Data/WHU-CD-256.zip"
+ls -lh "/content/Data/Dataset.zip"
 
 # Compare checksums
-md5sum "/content/drive/MyDrive/GoogleColabDrive/CustomDataset/Datasets/WHU/WHU-CD-256.zip"
-md5sum "/content/Data/WHU-CD-256.zip"
+md5sum "/content/drive/MyDrive/GoogleColabDrive/CustomDataset/Custom_Dataset/Dataset.zip"
+md5sum "/content/Data/Dataset.zip"
 
 # Remove Colab default stuff
 rm -rf /content/sample_data

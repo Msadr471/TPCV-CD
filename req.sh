@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Install packages
-pip install thop
-pip install albumentations
+pip install -qq thop
+pip install -qq albumentations
 
 # Print working dir
 pwd

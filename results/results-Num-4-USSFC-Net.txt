@@ -1,0 +1,561 @@
+Epoch 1 - Training phase
+Precision: 0.7070
+Recall: 0.0646
+F1: 0.1185
+IoU: 0.0634
+Epoch 1 - Validation phase
+Precision: 0.7311
+Recall: 0.5138
+F1: 0.6034
+IoU: 0.4538
+
+Epoch 2 - Training phase
+Precision: 0.7132
+Recall: 0.5617
+F1: 0.6284
+IoU: 0.4828
+Epoch 2 - Validation phase
+Precision: 0.7381
+Recall: 0.6504
+F1: 0.6915
+IoU: 0.5614
+
+Epoch 3 - Training phase
+Precision: 0.7415
+Recall: 0.6166
+F1: 0.6733
+IoU: 0.5378
+Epoch 3 - Validation phase
+Precision: 0.7194
+Recall: 0.7078
+F1: 0.7136
+IoU: 0.5911
+
+Epoch 4 - Training phase
+Precision: 0.7582
+Recall: 0.6473
+F1: 0.6984
+IoU: 0.5706
+Epoch 4 - Validation phase
+Precision: 0.7975
+Recall: 0.6916
+F1: 0.7408
+IoU: 0.6293
+
+Epoch 5 - Training phase
+Precision: 0.7817
+Recall: 0.6765
+F1: 0.7253
+IoU: 0.6074
+Epoch 5 - Validation phase
+Precision: 0.7053
+Recall: 0.7850
+F1: 0.7430
+IoU: 0.6327
+
+Epoch 6 - Training phase
+Precision: 0.7872
+Recall: 0.6966
+F1: 0.7392
+IoU: 0.6270
+Epoch 6 - Validation phase
+Precision: 0.7791
+Recall: 0.7498
+F1: 0.7642
+IoU: 0.6639
+
+Epoch 7 - Training phase
+Precision: 0.7944
+Recall: 0.7117
+F1: 0.7508
+IoU: 0.6440
+Epoch 7 - Validation phase
+Precision: 0.8130
+Recall: 0.7329
+F1: 0.7708
+IoU: 0.6741
+
+Epoch 8 - Training phase
+Precision: 0.7951
+Recall: 0.7258
+F1: 0.7589
+IoU: 0.6560
+Epoch 8 - Validation phase
+Precision: 0.7922
+Recall: 0.7327
+F1: 0.7613
+IoU: 0.6596
+
+Epoch 9 - Training phase
+Precision: 0.8012
+Recall: 0.7381
+F1: 0.7683
+IoU: 0.6702
+Epoch 9 - Validation phase
+Precision: 0.8166
+Recall: 0.7484
+F1: 0.7810
+IoU: 0.6898
+
+Epoch 10 - Training phase
+Precision: 0.8036
+Recall: 0.7368
+F1: 0.7688
+IoU: 0.6708
+Epoch 10 - Validation phase
+Precision: 0.7944
+Recall: 0.7553
+F1: 0.7744
+IoU: 0.6794
+
+Epoch 11 - Training phase
+Precision: 0.8086
+Recall: 0.7440
+F1: 0.7750
+IoU: 0.6804
+Epoch 11 - Validation phase
+Precision: 0.8002
+Recall: 0.7570
+F1: 0.7780
+IoU: 0.6851
+
+Epoch 12 - Training phase
+Precision: 0.8123
+Recall: 0.7647
+F1: 0.7878
+IoU: 0.7004
+Epoch 12 - Validation phase
+Precision: 0.7584
+Recall: 0.8110
+F1: 0.7838
+IoU: 0.6942
+
+Epoch 13 - Training phase
+Precision: 0.8119
+Recall: 0.7549
+F1: 0.7824
+IoU: 0.6919
+Epoch 13 - Validation phase
+Precision: 0.8010
+Recall: 0.7623
+F1: 0.7812
+IoU: 0.6900
+
+Epoch 14 - Training phase
+Precision: 0.8131
+Recall: 0.7529
+F1: 0.7818
+IoU: 0.6911
+Epoch 14 - Validation phase
+Precision: 0.7219
+Recall: 0.8025
+F1: 0.7600
+IoU: 0.6578
+
+Epoch 15 - Training phase
+Precision: 0.8094
+Recall: 0.7572
+F1: 0.7824
+IoU: 0.6919
+Epoch 15 - Validation phase
+Precision: 0.8304
+Recall: 0.7507
+F1: 0.7886
+IoU: 0.7015
+
+Epoch 16 - Training phase
+Precision: 0.8249
+Recall: 0.7663
+F1: 0.7944
+IoU: 0.7110
+Epoch 16 - Validation phase
+Precision: 0.7610
+Recall: 0.8024
+F1: 0.7812
+IoU: 0.6901
+
+Epoch 17 - Training phase
+Precision: 0.8203
+Recall: 0.7659
+F1: 0.7922
+IoU: 0.7073
+Epoch 17 - Validation phase
+Precision: 0.7592
+Recall: 0.8105
+F1: 0.7840
+IoU: 0.6944
+
+Epoch 18 - Training phase
+Precision: 0.8276
+Recall: 0.7812
+F1: 0.8037
+IoU: 0.7259
+Epoch 18 - Validation phase
+Precision: 0.8041
+Recall: 0.7889
+F1: 0.7964
+IoU: 0.7142
+
+Epoch 19 - Training phase
+Precision: 0.8283
+Recall: 0.7762
+F1: 0.8014
+IoU: 0.7222
+Epoch 19 - Validation phase
+Precision: 0.8011
+Recall: 0.7910
+F1: 0.7960
+IoU: 0.7135
+
+Epoch 20 - Training phase
+Precision: 0.8251
+Recall: 0.7772
+F1: 0.8005
+IoU: 0.7206
+Epoch 20 - Validation phase
+Precision: 0.8458
+Recall: 0.7302
+F1: 0.7838
+IoU: 0.6941
+
+Epoch 21 - Training phase
+Precision: 0.8308
+Recall: 0.7845
+F1: 0.8070
+IoU: 0.7314
+Epoch 21 - Validation phase
+Precision: 0.8247
+Recall: 0.7719
+F1: 0.7974
+IoU: 0.7158
+
+Epoch 22 - Training phase
+Precision: 0.8314
+Recall: 0.7777
+F1: 0.8037
+IoU: 0.7258
+Epoch 22 - Validation phase
+Precision: 0.7787
+Recall: 0.8086
+F1: 0.7933
+IoU: 0.7092
+
+Epoch 23 - Training phase
+Precision: 0.8383
+Recall: 0.7953
+F1: 0.8162
+IoU: 0.7466
+Epoch 23 - Validation phase
+Precision: 0.8124
+Recall: 0.7999
+F1: 0.8061
+IoU: 0.7300
+
+Epoch 24 - Training phase
+Precision: 0.8276
+Recall: 0.7783
+F1: 0.8023
+IoU: 0.7235
+Epoch 24 - Validation phase
+Precision: 0.8157
+Recall: 0.7816
+F1: 0.7983
+IoU: 0.7172
+
+Epoch 25 - Training phase
+Precision: 0.8313
+Recall: 0.7837
+F1: 0.8068
+IoU: 0.7311
+Epoch 25 - Validation phase
+Precision: 0.8307
+Recall: 0.7868
+F1: 0.8081
+IoU: 0.7332
+
+Epoch 26 - Training phase
+Precision: 0.8267
+Recall: 0.7818
+F1: 0.8036
+IoU: 0.7258
+Epoch 26 - Validation phase
+Precision: 0.8378
+Recall: 0.7744
+F1: 0.8049
+IoU: 0.7279
+
+Epoch 27 - Training phase
+Precision: 0.8402
+Recall: 0.8001
+F1: 0.8196
+IoU: 0.7523
+Epoch 27 - Validation phase
+Precision: 0.8286
+Recall: 0.7770
+F1: 0.8020
+IoU: 0.7231
+
+Epoch 28 - Training phase
+Precision: 0.8645
+Recall: 0.8316
+F1: 0.8477
+IoU: 0.7814
+Epoch 28 - Validation phase
+Precision: 0.8478
+Recall: 0.8103
+F1: 0.8287
+IoU: 0.7495
+
+Epoch 29 - Training phase
+Precision: 0.8430
+Recall: 0.8025
+F1: 0.8222
+IoU: 0.7569
+Epoch 29 - Validation phase
+Precision: 0.8121
+Recall: 0.8012
+F1: 0.8066
+IoU: 0.7306
+
+Epoch 30 - Training phase
+Precision: 0.8420
+Recall: 0.8050
+F1: 0.8231
+IoU: 0.7582
+Epoch 30 - Validation phase
+Precision: 0.8520
+Recall: 0.7843
+F1: 0.8168
+IoU: 0.7475
+
+Epoch 31 - Training phase
+Precision: 0.8395
+Recall: 0.8052
+F1: 0.8220
+IoU: 0.7564
+Epoch 31 - Validation phase
+Precision: 0.8321
+Recall: 0.7989
+F1: 0.8152
+IoU: 0.7449
+
+Epoch 32 - Training phase
+Precision: 0.8396
+Recall: 0.8050
+F1: 0.8219
+IoU: 0.7563
+Epoch 32 - Validation phase
+Precision: 0.7766
+Recall: 0.7724
+F1: 0.7745
+IoU: 0.6797
+
+Epoch 33 - Training phase
+Precision: 0.8450
+Recall: 0.8105
+F1: 0.8274
+IoU: 0.7656
+Epoch 33 - Validation phase
+Precision: 0.8438
+Recall: 0.7798
+F1: 0.8105
+IoU: 0.7373
+
+Epoch 34 - Training phase
+Precision: 0.8430
+Recall: 0.8094
+F1: 0.8258
+IoU: 0.7629
+Epoch 34 - Validation phase
+Precision: 0.8093
+Recall: 0.8053
+F1: 0.8073
+IoU: 0.7318
+
+Epoch 35 - Training phase
+Precision: 0.8439
+Recall: 0.8132
+F1: 0.8284
+IoU: 0.7672
+Epoch 35 - Validation phase
+Precision: 0.8183
+Recall: 0.8114
+F1: 0.8148
+IoU: 0.7443
+
+Epoch 36 - Training phase
+Precision: 0.8443
+Recall: 0.8106
+F1: 0.8271
+IoU: 0.7651
+Epoch 36 - Validation phase
+Precision: 0.8075
+Recall: 0.8054
+F1: 0.8064
+IoU: 0.7304
+
+Epoch 37 - Training phase
+Precision: 0.8472
+Recall: 0.8152
+F1: 0.8309
+IoU: 0.7716
+Epoch 37 - Validation phase
+Precision: 0.8321
+Recall: 0.7874
+F1: 0.8091
+IoU: 0.7348
+
+Epoch 38 - Training phase
+Precision: 0.8423
+Recall: 0.8107
+F1: 0.8262
+IoU: 0.7635
+Epoch 38 - Validation phase
+Precision: 0.8420
+Recall: 0.7693
+F1: 0.8040
+IoU: 0.7265
+
+Epoch 39 - Training phase
+Precision: 0.8394
+Recall: 0.8083
+F1: 0.8236
+IoU: 0.7591
+Epoch 39 - Validation phase
+Precision: 0.7804
+Recall: 0.8051
+F1: 0.7925
+IoU: 0.7079
+
+Epoch 40 - Training phase
+Precision: 0.8453
+Recall: 0.8106
+F1: 0.8276
+IoU: 0.7659
+Epoch 40 - Validation phase
+Precision: 0.8252
+Recall: 0.7927
+F1: 0.8086
+IoU: 0.7340
+
+Epoch 41 - Training phase
+Precision: 0.8500
+Recall: 0.8231
+F1: 0.8363
+IoU: 0.7810
+Epoch 41 - Validation phase
+Precision: 0.8396
+Recall: 0.7979
+F1: 0.8183
+IoU: 0.7501
+
+Epoch 42 - Training phase
+Precision: 0.8545
+Recall: 0.8259
+F1: 0.8399
+IoU: 0.7873
+Epoch 42 - Validation phase
+Precision: 0.8339
+Recall: 0.8079
+F1: 0.8207
+IoU: 0.7542
+
+Epoch 43 - Training phase
+Precision: 0.8560
+Recall: 0.8284
+F1: 0.8420
+IoU: 0.7908
+Epoch 43 - Validation phase
+Precision: 0.8055
+Recall: 0.8103
+F1: 0.8079
+IoU: 0.7329
+
+Epoch 44 - Training phase
+Precision: 0.8402
+Recall: 0.8129
+F1: 0.8263
+IoU: 0.7636
+Epoch 44 - Validation phase
+Precision: 0.8052
+Recall: 0.7745
+F1: 0.7896
+IoU: 0.7032
+
+Epoch 45 - Training phase
+Precision: 0.8501
+Recall: 0.8220
+F1: 0.8358
+IoU: 0.7801
+Epoch 45 - Validation phase
+Precision: 0.8513
+Recall: 0.7848
+F1: 0.8167
+IoU: 0.7474
+
+Epoch 46 - Training phase
+Precision: 0.8533
+Recall: 0.8272
+F1: 0.8401
+IoU: 0.7875
+Epoch 46 - Validation phase
+Precision: 0.8434
+Recall: 0.7974
+F1: 0.8197
+IoU: 0.7526
+
+Epoch 47 - Training phase
+Precision: 0.8567
+Recall: 0.8296
+F1: 0.8429
+IoU: 0.7926
+Epoch 47 - Validation phase
+Precision: 0.8466
+Recall: 0.8028
+F1: 0.8241
+IoU: 0.7600
+
+Epoch 48 - Training phase
+Precision: 0.8573
+Recall: 0.8322
+F1: 0.8446
+IoU: 0.7955
+Epoch 48 - Validation phase
+Precision: 0.8491
+Recall: 0.8055
+F1: 0.8267
+IoU: 0.7644
+
+Epoch 49 - Training phase
+Precision: 0.8540
+Recall: 0.8290
+F1: 0.8413
+IoU: 0.7897
+Epoch 49 - Validation phase
+Precision: 0.8445
+Recall: 0.7436
+F1: 0.7908
+IoU: 0.7052
+
+Epoch 50 - Training phase
+Precision: 0.8539
+Recall: 0.8276
+F1: 0.8406
+IoU: 0.7884
+Epoch 50 - Validation phase
+Precision: 0.7905
+Recall: 0.8309
+F1: 0.8102
+IoU: 0.7366
+
+Epoch 51 - Training phase
+Precision: 0.8546
+Recall: 0.8283
+F1: 0.8412
+IoU: 0.7896
+Epoch 51 - Validation phase
+Precision: 0.8079
+Recall: 0.8036
+F1: 0.8058
+IoU: 0.7294
+

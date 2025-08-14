@@ -1,8 +1,6 @@
 #!/bin/bash
 
 # Install packages
-# pip install tensorboardX==2.6.2.2
-# pip install tensorboardX
 pip install thop
 pip install albumentations
 
@@ -24,7 +22,10 @@ cp "/content/drive/MyDrive/GoogleColabDrive/CustomDataset/Datasets/Custom_Datase
 
 # Unzip only if not already done
 if [ ! -d /content/Data/Dataset ]; then
-    unzip "/content/Data/Dataset.zip" -d /content/Data/
+    unzip -q "/content/Data/Dataset.zip" -d /content/Data/ || {
+        echo "❌ Unzip failed!"
+        exit 1
+    }
 else
     echo "Already unzipped 💁‍♂️"
 fi

@@ -7,7 +7,6 @@ from models.change_classifier import ChangeClassifier
 import argparse
 
 def parse_arguments():
-    # Argument Parser creation
     parser = argparse.ArgumentParser(
         description="Parameter for data analysis, data cleaning and model training."
     )
@@ -15,7 +14,7 @@ def parse_arguments():
         "--datapath",
         type=str,
         help="data path",
-        default="/home/codegoni/aerial/WHU-CD-256/WHU-CD-256",
+        default="/content/Data/Dataset",
     )
     parser.add_argument(
         "--modelpath",
@@ -28,38 +27,23 @@ def parse_arguments():
     return parsed_arguments
 
 if __name__ == "__main__":
-
-    # Parse arguments:
     args = parse_arguments()
 
-    # tool for metrics
     tool_metric = ConfuseMatrixMeter(n_class=2)
 
-    # Initialisation of the dataset
-    data_path = args.datapath 
-    dataset = MyDataset(data_path, "test")
+    dataset = MyDataset(args.datapath, "test")
     test_loader = DataLoader(dataset, batch_size=1)
 
-    # Initialisation of the model and print model stat
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
     model = ChangeClassifier()
-    modelpath = args.modelpath
-    model.load_state_dict(torch.load(modelpath))
-
-    # Print the number of model parameters 
-    param_tot = sum(p.numel() for p in model.parameters())
-    print()
-    print("Number of model parameters {}".format(param_tot))
-    print()
-
-    # Set evaluation mode and cast the model to the desidered device
-    model.eval()
-    if torch.cuda.is_available():
-        device = "cuda"
-    else:
-        device = "cpu"
+    model.load_state_dict(torch.load(args.modelpath, map_location=device))
     model.to(device)
+    model.eval()
 
-    # loop to evaluate the model and print the metrics
+    param_tot = sum(p.numel() for p in model.parameters())
+    print(f"\nNumber of model parameters {param_tot}\n")
+
     bce_loss = 0.0
     criterion = torch.nn.BCELoss()
 
@@ -69,14 +53,11 @@ if __name__ == "__main__":
             testimg = testimg.to(device).float()
             mask = mask.float()
 
-            # pass refence and test in the model
             generated_mask = model(reference, testimg).squeeze(1)
             
-            # compute the loss for the batch and backpropagate
             generated_mask = generated_mask.to("cpu")
             bce_loss += criterion(generated_mask, mask)
 
-            ### Update the metric tool
             bin_genmask = (generated_mask > 0.5).numpy()
             bin_genmask = bin_genmask.astype(int)
             mask = mask.numpy()

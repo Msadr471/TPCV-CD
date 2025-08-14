@@ -32,7 +32,7 @@ if __name__ == "__main__":
     tool_metric = ConfuseMatrixMeter(n_class=2)
 
     dataset = MyDataset(args.datapath, "test")
-    test_loader = DataLoader(dataset, batch_size=64)
+    test_loader = DataLoader(dataset, batch_size=128)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

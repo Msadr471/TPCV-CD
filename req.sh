@@ -3,7 +3,6 @@
 pip install -qq thop
 pip install -qq albumentations
 
-pwd
 cd /content/
 pwd
 
@@ -19,7 +18,7 @@ cd /content/Data
 pwd
 
 if [ ! -d /content/Data/Dataset ]; then
-    unzip -q "Dataset.zip" -d /content/Data/ || {
+    unzip -q "Dataset.zip" || {
         echo "❌ Unzip failed!"
         exit 1
     }

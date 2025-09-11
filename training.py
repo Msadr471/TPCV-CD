@@ -83,18 +83,28 @@ def train(
         reference = reference.to(device).float()
         testimg = testimg.to(device).float()
         mask = mask.to(device).float()
+        print(f"Input shapes - reference: {reference.shape}, testimg: {testimg.shape}, mask: {mask.shape}")
 
         # Evaluating the model:
-        generated_mask = model(reference, testimg).squeeze(1)
+        generated_mask = model(reference, testimg)  # Shape: (batch_size, 1, H, W)
+        print(f"Model output shape: {generated_mask.shape}")
+        
+        # Remove channel dimension from model output:
+        generated_mask = generated_mask.squeeze(1)  # Shape: (batch_size, H, W)
+        print(f"After squeeze shape: {generated_mask.shape}")
+        print(f"Mask shape: {mask.shape}")
+        
+        # Ensure mask doesn't have extra dimensions (in case it's (batch_size, 1, H, W)):
+        # if mask.dim() == 4 and mask.shape[1] == 1:
+        #     mask = mask.squeeze(1)  # Remove channel dim from mask too
 
         # Loss gradient descend step:
         it_loss = criterion(generated_mask, mask)
 
         # Feeding the comparison metric tool:
-        bin_genmask = (generated_mask.to("cpu") >
-                       0.5).detach().numpy().astype(int)
-        mask = mask.to("cpu").numpy().astype(int)
-        tool4metric.update_cm(pr=bin_genmask, gt=mask)
+        bin_genmask = (generated_mask.to("cpu") > 0.5).detach().numpy().astype(int)
+        mask_np = mask.to("cpu").numpy().astype(int)
+        tool4metric.update_cm(pr=bin_genmask, gt=mask_np)
 
         return it_loss
 
@@ -266,8 +276,10 @@ def run():
     print("Number of model parameters {}\n".format(parameters_tot))
 
     # define the loss function for the model training.
-    criterion = FocalLoss(alpha=0.25, gamma=2.0, reduction='mean')
-
+    # criterion = FocalLoss(alpha=0.25, gamma=2.0, reduction='mean')
+    criterion = torch.nn.BCELoss()
+    
+    
     # choose the optimizer in view of the used dataset
     # Optimizer with tuned parameters for LEVIR-CD
     optimizer = torch.optim.AdamW(model.parameters(), lr=0.00356799066427741,

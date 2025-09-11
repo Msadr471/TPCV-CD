@@ -1,8 +1,6 @@
 import argparse
 import os
 import shutil
-
-
 import dataset.dataset as dtset
 import torch
 import numpy as np
@@ -11,7 +9,7 @@ from metrics.metric_tool import ConfuseMatrixMeter
 from models.change_classifier import ChangeClassifier as Model
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
-
+from focal_loss.focal_loss import FocalLoss
 
 def parse_arguments():
     # Argument Parser creation
@@ -241,8 +239,8 @@ def run():
     # Inizialitazion of dataset and dataloader:
     trainingdata = dtset.MyDataset(args.datapath, "train")
     validationdata = dtset.MyDataset(args.datapath, "val")
-    data_loader_training = DataLoader(trainingdata, batch_size=8, shuffle=True)
-    data_loader_val = DataLoader(validationdata, batch_size=8, shuffle=True)
+    data_loader_training = DataLoader(trainingdata, batch_size=32, shuffle=True)
+    data_loader_val = DataLoader(validationdata, batch_size=32, shuffle=True)
 
     # device setting for training
     if torch.cuda.is_available():
@@ -268,7 +266,7 @@ def run():
     print("Number of model parameters {}\n".format(parameters_tot))
 
     # define the loss function for the model training.
-    criterion = torch.nn.BCELoss()
+    criterion = FocalLoss(alpha=0.25, gamma=2.0, reduction='mean')
 
     # choose the optimizer in view of the used dataset
     # Optimizer with tuned parameters for LEVIR-CD

@@ -18,7 +18,7 @@ fi
 mkdir -p /content/Data
 
 # Copy zip file
-cp "/content/drive/MyDrive/GoogleColabDrive/CustomDataset/Datasets/Custom_Dataset/Dataset.zip" /content/Data/
+cp "/content/drive/MyDrive/GoogleColabDrive/CustomDataset/Datasets/Tehran_Mashhad/Tehran/Dataset.zip" /content/Data/
 
 # Unzip only if not already done
 if [ ! -d /content/Data/Dataset ]; then
@@ -34,7 +34,7 @@ fi
 ls -lh "/content/Data/Dataset.zip"
 
 # Compare checksums
-md5sum "/content/drive/MyDrive/GoogleColabDrive/CustomDataset/Datasets/Custom_Dataset/Dataset.zip"
+md5sum "/content/drive/MyDrive/GoogleColabDrive/CustomDataset/Datasets/Tehran_Mashhad/Tehran/Dataset.zip"
 md5sum "/content/Data/Dataset.zip"
 
 # Remove Colab default stuff

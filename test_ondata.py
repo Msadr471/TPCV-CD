@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 from metrics.metric_tool import ConfuseMatrixMeter
 from models.change_classifier import ChangeClassifier
 import argparse
+from focal_loss.focal_loss import FocalLoss
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
@@ -45,7 +46,8 @@ if __name__ == "__main__":
     print(f"\nNumber of model parameters {param_tot}\n")
 
     bce_loss = 0.0
-    criterion = torch.nn.BCELoss()
+    # criterion = torch.nn.BCELoss()
+    criterion = FocalLoss(alpha=0.25, gamma=2.0, reduction='mean')
 
     with torch.no_grad():
         for (reference, testimg), mask in tqdm.tqdm(test_loader):

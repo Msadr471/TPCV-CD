@@ -78,25 +78,18 @@ def train(
 
     tool4metric = ConfuseMatrixMeter(n_class=2)
 
+    # Remove the debug prints from evaluate function:
     def evaluate(reference, testimg, mask):
         # All the tensors on the device:
         reference = reference.to(device).float()
         testimg = testimg.to(device).float()
         mask = mask.to(device).float()
-        print(f"Input shapes - reference: {reference.shape}, testimg: {testimg.shape}, mask: {mask.shape}")
 
         # Evaluating the model:
-        generated_mask = model(reference, testimg)  # Shape: (batch_size, 1, H, W)
-        print(f"Model output shape: {generated_mask.shape}")
+        generated_mask = model(reference, testimg)
         
         # Remove channel dimension from model output:
-        generated_mask = generated_mask.squeeze(1)  # Shape: (batch_size, H, W)
-        print(f"After squeeze shape: {generated_mask.shape}")
-        print(f"Mask shape: {mask.shape}")
-        
-        # Ensure mask doesn't have extra dimensions (in case it's (batch_size, 1, H, W)):
-        # if mask.dim() == 4 and mask.shape[1] == 1:
-        #     mask = mask.squeeze(1)  # Remove channel dim from mask too
+        generated_mask = generated_mask.squeeze(1)
 
         # Loss gradient descend step:
         it_loss = criterion(generated_mask, mask)
@@ -276,8 +269,8 @@ def run():
     print("Number of model parameters {}\n".format(parameters_tot))
 
     # define the loss function for the model training.
-    # criterion = FocalLoss(alpha=0.25, gamma=2.0, reduction='mean')
-    criterion = torch.nn.BCELoss()
+    criterion = FocalLoss(alpha=0.25, gamma=2.0, reduction='mean')
+    # criterion = torch.nn.BCELoss()
     
     
     # choose the optimizer in view of the used dataset

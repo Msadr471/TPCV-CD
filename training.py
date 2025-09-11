@@ -239,8 +239,8 @@ def run():
     # Inizialitazion of dataset and dataloader:
     trainingdata = dtset.MyDataset(args.datapath, "train")
     validationdata = dtset.MyDataset(args.datapath, "val")
-    data_loader_training = DataLoader(trainingdata, batch_size=32, shuffle=True)
-    data_loader_val = DataLoader(validationdata, batch_size=32, shuffle=True)
+    data_loader_training = DataLoader(trainingdata, batch_size=24, shuffle=True)
+    data_loader_val = DataLoader(validationdata, batch_size=24, shuffle=True)
 
     # device setting for training
     if torch.cuda.is_available():

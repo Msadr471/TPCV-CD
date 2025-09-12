@@ -326,9 +326,6 @@ def run():
     # RESUME TRAINING LOGIC
     if args.resume_from:
         print(f"Loading checkpoint from {args.resume_from}")
-        
-        # Solution for PyTorch 2.6+ security changes
-        from torch.serialization import add_safe_globals
         try:
             # First try with weights_only=True (secure mode)
             add_safe_globals([np._core.multiarray.scalar])
@@ -337,7 +334,6 @@ def run():
             # Fallback to insecure mode if secure mode fails
             print("Secure loading failed, falling back to insecure mode")
             checkpoint = torch.load(args.resume_from, weights_only=False)
-        
         model.load_state_dict(checkpoint['model_state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         scheduler.load_state_dict(checkpoint['scheduler_state_dict'])

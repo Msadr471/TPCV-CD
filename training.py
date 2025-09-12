@@ -207,13 +207,15 @@ def train(
 
         ### Save the model ###
         if epc % save_after == 0:
+            # Format epoch number with leading zeros (3 digits)
+            epoch_str = str(epc).zfill(3)
             torch.save({
                 'epoch': epc,
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
                 'scheduler_state_dict': scheduler.state_dict(),
                 'loss': epoch_loss,
-            }, os.path.join(logpath, f"checkpoint_{epc}.pth"))
+            }, os.path.join(logpath, f"checkpoint_{epoch_str}.pth"))
 
     def validation_phase(epc):
         model.eval()
@@ -283,7 +285,7 @@ def run():
     args = parse_arguments()
 
     # Initialize tensorboard:
-    writer = SummaryWriter(log_dir=args.log_path, filename_suffix="epochs_results")
+    writer = SummaryWriter(log_dir=args.log_path)
 
     # Inizialitazion of dataset and dataloader:
     trainingdata = dtset.MyDataset(args.datapath, "train")

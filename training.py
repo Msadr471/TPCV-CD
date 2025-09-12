@@ -334,8 +334,19 @@ def run():
             # Fallback to insecure mode if secure mode fails
             print("Secure loading failed, falling back to insecure mode")
             checkpoint = torch.load(args.resume_from, weights_only=False)
+        
+        # Load model state dict and move to device
         model.load_state_dict(checkpoint['model_state_dict'])
+        model = model.to(device)
+        
+        # Load optimizer state dict and ensure all tensors are on the correct device
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        for state in optimizer.state.values():
+            for k, v in state.items():
+                if isinstance(v, torch.Tensor):
+                    state[k] = v.to(device)
+        
+        # Load scheduler
         scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
         start_epoch = checkpoint['epoch'] + 1
         print(f"Resuming from epoch {start_epoch}")

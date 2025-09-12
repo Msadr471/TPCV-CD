@@ -328,9 +328,7 @@ def run():
         print(f"Loading checkpoint from {args.resume_from}")
         
         # Solution for PyTorch 2.6+ security changes
-        import numpy as np
         from torch.serialization import add_safe_globals
-        
         try:
             # First try with weights_only=True (secure mode)
             add_safe_globals([np._core.multiarray.scalar])

@@ -313,7 +313,7 @@ def run():
     print("Number of model parameters {}\n".format(parameters_tot))
 
     # define the loss function for the model training.
-    criterion = FocalLoss(alpha=0.75, gamma=3.0, reduction='mean')
+    criterion = FocalLoss(alpha=0.25, gamma=3.0, reduction='mean')
     
     # choose the optimizer with configurable parameters
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate,

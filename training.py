@@ -284,7 +284,7 @@ def run():
 
     # scheduler for the lr of the optimizer
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-        optimizer, T_max=100)
+        optimizer, T_max=50)
 
     # copy the configurations
     _ = shutil.copytree(

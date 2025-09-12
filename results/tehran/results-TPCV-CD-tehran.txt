@@ -236,3 +236,224 @@ IoU for epoch 12 is 0.6718
 F1 for epoch 12 is 0.8037
 
 Epoch 13
+Training phase summary
+Loss for epoch 13 is 0.0013328874483704567
+Precision for epoch 13 is 0.8463
+Recall for epoch 13 is 0.7828
+Overal Accuracy for epoch 13 is 0.9924
+IoU for epoch 13 is 0.6854
+F1 for epoch 13 is 0.8133
+
+Validation phase summary
+Loss for epoch 13 is 0.0012911964440718293
+Precision for epoch 13 is 0.8647
+Recall for epoch 13 is 0.7413
+Overal Accuracy for epoch 13 is 0.9928
+IoU for epoch 13 is 0.6643
+F1 for epoch 13 is 0.7983
+
+Epoch 14
+Training phase summary
+Loss for epoch 14 is 0.0012608771212399006
+Precision for epoch 14 is 0.8561
+Recall for epoch 14 is 0.7880
+Overal Accuracy for epoch 14 is 0.9927
+IoU for epoch 14 is 0.6959
+F1 for epoch 14 is 0.8207
+
+Validation phase summary
+Loss for epoch 14 is 0.0012212982401251793
+Precision for epoch 14 is 0.8041
+Recall for epoch 14 is 0.8427
+Overal Accuracy for epoch 14 is 0.9931
+IoU for epoch 14 is 0.6992
+F1 for epoch 14 is 0.8230
+
+Epoch 15
+Training phase summary
+Loss for epoch 15 is 0.001197594916447997
+Precision for epoch 15 is 0.8604
+Recall for epoch 15 is 0.8018
+Overal Accuracy for epoch 15 is 0.9931
+IoU for epoch 15 is 0.7095
+F1 for epoch 15 is 0.8301
+
+Validation phase summary
+Loss for epoch 15 is 0.0013293558731675148
+Precision for epoch 15 is 0.8288
+Recall for epoch 15 is 0.8109
+Overal Accuracy for epoch 15 is 0.9932
+IoU for epoch 15 is 0.6946
+F1 for epoch 15 is 0.8198
+
+Epoch 16
+Training phase summary
+Loss for epoch 16 is 0.0011931447079405189
+Precision for epoch 16 is 0.8679
+Recall for epoch 16 is 0.7977
+Overal Accuracy for epoch 16 is 0.9932
+IoU for epoch 16 is 0.7113
+F1 for epoch 16 is 0.8313
+
+Validation phase summary
+Loss for epoch 16 is 0.001147880800999701
+Precision for epoch 16 is 0.8724
+Recall for epoch 16 is 0.7663
+Overal Accuracy for epoch 16 is 0.9934
+IoU for epoch 16 is 0.6890
+F1 for epoch 16 is 0.8159
+
+Epoch 17
+Training phase summary
+Loss for epoch 17 is 0.0011485202703624964
+Precision for epoch 17 is 0.8706
+Recall for epoch 17 is 0.8032
+Overal Accuracy for epoch 17 is 0.9933
+IoU for epoch 17 is 0.7175
+F1 for epoch 17 is 0.8355
+
+Validation phase summary
+Loss for epoch 17 is 0.001232069218531251
+Precision for epoch 17 is 0.8111
+Recall for epoch 17 is 0.8476
+Overal Accuracy for epoch 17 is 0.9933
+IoU for epoch 17 is 0.7079
+F1 for epoch 17 is 0.8290
+
+Epoch 18
+Training phase summary
+Loss for epoch 18 is 0.0011662737233564258
+Precision for epoch 18 is 0.8644
+Recall for epoch 18 is 0.7969
+Overal Accuracy for epoch 18 is 0.9931
+IoU for epoch 18 is 0.7083
+F1 for epoch 18 is 0.8293
+
+Validation phase summary
+Loss for epoch 18 is 0.0010897928150370717
+Precision for epoch 18 is 0.8520
+Recall for epoch 18 is 0.8110
+Overal Accuracy for epoch 18 is 0.9937
+IoU for epoch 18 is 0.7108
+F1 for epoch 18 is 0.8310
+
+Epoch 19
+Training phase summary
+Loss for epoch 19 is 0.0011138180270791054
+Precision for epoch 19 is 0.8694
+Recall for epoch 19 is 0.8102
+Overal Accuracy for epoch 19 is 0.9934
+IoU for epoch 19 is 0.7223
+F1 for epoch 19 is 0.8388
+
+Validation phase summary
+Loss for epoch 19 is 0.001207604305818677
+Precision for epoch 19 is 0.8829
+Recall for epoch 19 is 0.7615
+Overal Accuracy for epoch 19 is 0.9935
+IoU for epoch 19 is 0.6916
+F1 for epoch 19 is 0.8177
+
+Epoch 20
+Training phase summary
+Loss for epoch 20 is 0.0010574324987828732
+Precision for epoch 20 is 0.8760
+Recall for epoch 20 is 0.8162
+Overal Accuracy for epoch 20 is 0.9937
+IoU for epoch 20 is 0.7317
+F1 for epoch 20 is 0.8451
+
+Validation phase summary
+Loss for epoch 20 is 0.001087726908735931
+Precision for epoch 20 is 0.8729
+Recall for epoch 20 is 0.7975
+Overal Accuracy for epoch 20 is 0.9939
+IoU for epoch 20 is 0.7146
+F1 for epoch 20 is 0.8335
+
+Epoch 21
+Training phase summary
+Loss for epoch 21 is 0.0010253055952489376
+Precision for epoch 21 is 0.8756
+Recall for epoch 21 is 0.8235
+Overal Accuracy for epoch 21 is 0.9938
+IoU for epoch 21 is 0.7372
+F1 for epoch 21 is 0.8487
+
+Validation phase summary
+Loss for epoch 21 is 0.0011333301663398743
+Precision for epoch 21 is 0.8780
+Recall for epoch 21 is 0.7957
+Overal Accuracy for epoch 21 is 0.9940
+IoU for epoch 21 is 0.7165
+F1 for epoch 21 is 0.8349
+
+Epoch 22
+Training phase summary
+Loss for epoch 22 is 0.0010181089164689183
+Precision for epoch 22 is 0.8816
+Recall for epoch 22 is 0.8254
+Overal Accuracy for epoch 22 is 0.9940
+IoU for epoch 22 is 0.7431
+F1 for epoch 22 is 0.8526
+
+Validation phase summary
+Loss for epoch 22 is 0.0012005844619125128
+Precision for epoch 22 is 0.8950
+Recall for epoch 22 is 0.7653
+Overal Accuracy for epoch 22 is 0.9938
+IoU for epoch 22 is 0.7023
+F1 for epoch 22 is 0.8251
+
+Epoch 23
+Training phase summary
+Loss for epoch 23 is 0.0009775996441021562
+Precision for epoch 23 is 0.8805
+Recall for epoch 23 is 0.8310
+Overal Accuracy for epoch 23 is 0.9941
+IoU for epoch 23 is 0.7468
+F1 for epoch 23 is 0.8550
+
+Validation phase summary
+Loss for epoch 23 is 0.0010727482149377465
+Precision for epoch 23 is 0.8849
+Recall for epoch 23 is 0.8001
+Overal Accuracy for epoch 23 is 0.9942
+IoU for epoch 23 is 0.7247
+F1 for epoch 23 is 0.8404
+
+Epoch 24
+Training phase summary
+Loss for epoch 24 is 0.0009258821373805404
+Precision for epoch 24 is 0.8901
+Recall for epoch 24 is 0.8335
+Overal Accuracy for epoch 24 is 0.9943
+IoU for epoch 24 is 0.7557
+F1 for epoch 24 is 0.8609
+
+Validation phase summary
+Loss for epoch 24 is 0.0010457386961206794
+Precision for epoch 24 is 0.8812
+Recall for epoch 24 is 0.8101
+Overal Accuracy for epoch 24 is 0.9943
+IoU for epoch 24 is 0.7303
+F1 for epoch 24 is 0.8441
+
+Epoch 25
+Training phase summary
+Loss for epoch 25 is 0.0009220403153449297
+Precision for epoch 25 is 0.8839
+Recall for epoch 25 is 0.8440
+Overal Accuracy for epoch 25 is 0.9944
+IoU for epoch 25 is 0.7598
+F1 for epoch 25 is 0.8635
+
+Validation phase summary
+Loss for epoch 25 is 0.0011361229699105024
+Precision for epoch 25 is 0.9198
+Recall for epoch 25 is 0.7507
+Overal Accuracy for epoch 25 is 0.9940
+IoU for epoch 25 is 0.7046
+F1 for epoch 25 is 0.8267
+
+Epoch 26

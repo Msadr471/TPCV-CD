@@ -19,12 +19,50 @@ def parse_arguments():
     parser.add_argument(
         "--datapath",
         type=str,
+        required=True,
         help="data path",
     )
     parser.add_argument(
         "--log-path",
         type=str,
+        required=True,
         help="log path",
+    )
+    parser.add_argument(
+        "--resume-from",
+        type=str,
+        default=None,
+        help="Path to checkpoint to resume from"
+    )
+    parser.add_argument(
+        "--start-epoch",
+        type=int,
+        default=0,
+        help="Epoch to start from (when resuming)"
+    )
+    parser.add_argument(
+        "--epochs",
+        type=int,
+        default=50,
+        help="Total number of epochs to train"
+    )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=24,
+        help="Batch size for training"
+    )
+    parser.add_argument(
+        "--learning-rate",
+        type=float,
+        default=0.01,
+        help="Learning rate"
+    )
+    parser.add_argument(
+        "--weight-decay",
+        type=float,
+        default=0.005,
+        help="Weight decay"
     )
 
     group_gpus = parser.add_mutually_exclusive_group()
@@ -39,7 +77,7 @@ def parse_arguments():
 
     # create log dir if it doesn't exists
     if not os.path.exists(parsed_arguments.log_path):
-        os.mkdir(parsed_arguments.log_path)
+        os.makedirs(parsed_arguments.log_path, exist_ok=True)
 
     dir_run = sorted(
         [
@@ -56,6 +94,9 @@ def parse_arguments():
     parsed_arguments.log_path = os.path.join(
         parsed_arguments.log_path, "run_%04d" % num_run + "/"
     )
+    
+    # Create the run directory
+    os.makedirs(parsed_arguments.log_path, exist_ok=True)
 
     return parsed_arguments
 
@@ -71,7 +112,8 @@ def train(
     writer,
     epochs,
     save_after,
-    device
+    device,
+    start_epoch=0
 ):
 
     model = model.to(device)
@@ -165,9 +207,13 @@ def train(
 
         ### Save the model ###
         if epc % save_after == 0:
-            torch.save(
-                model.state_dict(), os.path.join(logpath, "model_{}.pth".format(epc))
-            )
+            torch.save({
+                'epoch': epc,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'scheduler_state_dict': scheduler.state_dict(),
+                'loss': epoch_loss,
+            }, os.path.join(logpath, f"checkpoint_{epc}.pth"))
 
     def validation_phase(epc):
         model.eval()
@@ -219,7 +265,7 @@ def train(
         )
         print()
 
-    for epc in range(epochs):
+    for epc in range(start_epoch, epochs):
         training_phase(epc)
         validation_phase(epc)
         # scheduler step
@@ -237,13 +283,13 @@ def run():
     args = parse_arguments()
 
     # Initialize tensorboard:
-    writer = SummaryWriter(log_dir=args.log_path)
+    writer = SummaryWriter(log_dir=args.log_path, filename_suffix="epochs_results")
 
     # Inizialitazion of dataset and dataloader:
     trainingdata = dtset.MyDataset(args.datapath, "train")
     validationdata = dtset.MyDataset(args.datapath, "val")
-    data_loader_training = DataLoader(trainingdata, batch_size=24, shuffle=True)
-    data_loader_val = DataLoader(validationdata, batch_size=24, shuffle=True)
+    data_loader_training = DataLoader(trainingdata, batch_size=args.batch_size, shuffle=True)
+    data_loader_val = DataLoader(validationdata, batch_size=args.batch_size, shuffle=True)
 
     # device setting for training
     if torch.cuda.is_available():
@@ -255,41 +301,41 @@ def run():
 
     # Initialize the model
     model = Model()
-    restart_from_checkpoint = False
-    model_path = None
-    if restart_from_checkpoint:
-        model.load_state_dict(torch.load(model_path))
-        print("Checkpoint succesfully loaded")
+    start_epoch = args.start_epoch
 
     # print number of parameters
     parameters_tot = 0
     for nom, param in model.named_parameters():
-        # print (nom, param.data.shape)
         parameters_tot += torch.prod(torch.tensor(param.data.shape))
     print("Number of model parameters {}\n".format(parameters_tot))
 
     # define the loss function for the model training.
     criterion = FocalLoss(alpha=0.25, gamma=2.0, reduction='mean')
-    # criterion = torch.nn.BCELoss()
     
-    
-    # choose the optimizer in view of the used dataset
-    # Optimizer with tuned parameters for LEVIR-CD
-    optimizer = torch.optim.AdamW(model.parameters(), lr=0.00356799066427741,
-                                  weight_decay=0.009449677083344786, amsgrad=False)
-
-    # Optimizer with tuned parameters for WHU-CD
-    # optimizer = torch.optim.AdamW(model.parameters(), lr=0.002596776436816101,
-    #                                 weight_decay=0.008620171028843307, amsgrad=False)
+    # choose the optimizer with configurable parameters
+    optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate,
+                                  weight_decay=args.weight_decay, amsgrad=False)
 
     # scheduler for the lr of the optimizer
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-        optimizer, T_max=50)
+        optimizer, T_max=args.epochs)
+
+    # RESUME TRAINING LOGIC
+    if args.resume_from:
+        print(f"Loading checkpoint from {args.resume_from}")
+        checkpoint = torch.load(args.resume_from)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+        start_epoch = checkpoint['epoch'] + 1
+        print(f"Resuming from epoch {start_epoch}")
 
     # copy the configurations
+    os.makedirs(os.path.join(args.log_path, "models"), exist_ok=True)
     _ = shutil.copytree(
         "./models",
         os.path.join(args.log_path, "models"),
+        dirs_exist_ok=True  # Added for Python 3.8+ compatibility
     )
 
     train(
@@ -301,9 +347,10 @@ def run():
         scheduler,
         args.log_path,
         writer,
-        epochs=50,
+        epochs=args.epochs,
         save_after=1,
-        device=device
+        device=device,
+        start_epoch=start_epoch
     )
     writer.close()
 

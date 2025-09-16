@@ -34,13 +34,12 @@ if __name__ == "__main__":
     tool_metric = ConfuseMatrixMeter(n_class=2)
 
     dataset = MyDataset(args.datapath, "test")
-    test_loader = DataLoader(dataset, batch_size=128)
+    test_loader = DataLoader(dataset, batch_size=100)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     model = ChangeClassifier()
 
-    
     # Add safe globals for numpy scalars
     with torch.serialization.safe_globals([np._core.multiarray.scalar]):
         ckpt = torch.load(args.modelpath, map_location="cpu", weights_only=False)
@@ -52,9 +51,9 @@ if __name__ == "__main__":
     param_tot = sum(p.numel() for p in model.parameters())
     print(f"\nNumber of model parameters {param_tot}\n")
 
-    bce_loss = 0.0
+    loss = 0.0
     # criterion = torch.nn.BCELoss()
-    criterion = FocalLoss(alpha=0.25, gamma=2.0, reduction='mean')
+    criterion = FocalLoss(alpha=0.90, gamma=4.0, reduction='mean')
 
     with torch.no_grad():
         for (reference, testimg), mask in tqdm.tqdm(test_loader):
@@ -65,7 +64,7 @@ if __name__ == "__main__":
             generated_mask = model(reference, testimg).squeeze(1)
             
             generated_mask = generated_mask.to("cpu")
-            bce_loss += criterion(generated_mask, mask)
+            loss += criterion(generated_mask, mask)
 
             bin_genmask = (generated_mask > 0.5).numpy()
             bin_genmask = bin_genmask.astype(int)
@@ -73,9 +72,9 @@ if __name__ == "__main__":
             mask = mask.astype(int)
             tool_metric.update_cm(pr=bin_genmask, gt=mask)
 
-        bce_loss /= len(test_loader)
+        loss /= len(test_loader)
         print("Test summary")
-        print("Loss is {}".format(bce_loss))
+        print("Loss is {}".format(loss))
         print()
 
         scores_dictionary = tool_metric.get_scores()

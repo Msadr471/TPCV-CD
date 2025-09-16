@@ -226,11 +226,11 @@ def train(
             # Format epoch number with leading zeros (3 digits)
             epoch_str = str(epc).zfill(3)
             torch.save({
-                'epoch': epc,
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
                 'scheduler_state_dict': scheduler.state_dict(),
                 'loss': epoch_loss,
+                'epoch': epc,
             }, os.path.join(logpath, f"checkpoint_{epoch_str}.pth"))
 
     def validation_phase(epc):

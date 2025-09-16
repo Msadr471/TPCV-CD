@@ -39,10 +39,12 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     model = ChangeClassifier()
+
     
     # Add safe globals for numpy scalars
     with torch.serialization.safe_globals([np._core.multiarray.scalar]):
-        model.load_state_dict(torch.load(args.modelpath, map_location=device, weights_only=False))
+        ckpt = torch.load(args.modelpath, map_location="cpu", weights_only=False)
+        model.load_state_dict(ckpt["model_state_dict"]) 
     
     model.to(device)
     model.eval()

@@ -11,6 +11,7 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from focal_loss.focal_loss import FocalLoss
 from torch.serialization import add_safe_globals
+from FAdam.fadam import FAdam
 
 def parse_arguments():
     # Argument Parser creation
@@ -64,6 +65,20 @@ def parse_arguments():
         type=float,
         default=0.005,
         help="Weight decay"
+    )
+    parser.add_argument(
+        "--optimizer",
+        type=str,
+        default="fadam",
+        choices=["fadam", "adamw"],
+        help="Optimizer to use (fadam or adamw)"
+    )
+    parser.add_argument(
+        "--loss-function",
+        type=str,
+        default="focal",
+        choices=["focal", "bce"],
+        help="Loss function to use (focal or bce)"
     )
 
     group_gpus = parser.add_mutually_exclusive_group()
@@ -312,42 +327,79 @@ def run():
         parameters_tot += torch.prod(torch.tensor(param.data.shape))
     print("Number of model parameters {}\n".format(parameters_tot))
 
+    def create_criterion(loss_type='focal', **kwargs):
+        if loss_type == 'focal':
+            return FocalLoss(alpha=0.90, gamma=4.0, reduction='mean')
+        elif loss_type == 'bce':
+            return torch.nn.BCELoss()
+        else:
+            raise ValueError(f"Unknown loss type: {loss_type}")
+
     # define the loss function for the model training.
-    criterion = FocalLoss(alpha=0.90, gamma=4.0, reduction='mean')
+    criterion = create_criterion(loss_type=args.loss_function)
     
     # choose the optimizer with configurable parameters
-    optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate,
-                                  weight_decay=args.weight_decay, amsgrad=False)
+    def create_optimizer(model, args, optimizer_type='fadam'):
+        if optimizer_type == 'fadam':
+            return FAdam(
+                model.parameters(), 
+                lr=args.learning_rate,
+                weight_decay=args.weight_decay,
+                betas=(0.9, 0.999),
+                clip=1.0,
+                p=0.5,
+                eps=1e-8,
+                momentum_dtype=torch.float32,
+                fim_dtype=torch.float32,
+                maximize=False
+            )
+        elif optimizer_type == 'adamw':
+            return torch.optim.AdamW(
+                model.parameters(), 
+                lr=args.learning_rate,
+                weight_decay=args.weight_decay,
+                amsgrad=False
+            )
+        else:
+            raise ValueError(f"Unknown optimizer type: {optimizer_type}")
+
+    # Then use it:
+    optimizer = create_optimizer(model, args, optimizer_type=args.optimizer)
 
     # scheduler for the lr of the optimizer
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-        optimizer, T_max=args.epochs)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
 
     # RESUME TRAINING LOGIC
+    # In the resume training section, you might need to adjust this:
     if args.resume_from:
         print(f"Loading checkpoint from {args.resume_from}")
         try:
-            # First try with weights_only=True (secure mode)
-            add_safe_globals([np._core.multiarray.scalar])
             checkpoint = torch.load(args.resume_from, weights_only=True)
         except:
-            # Fallback to insecure mode if secure mode fails
             print("Secure loading failed, falling back to insecure mode")
             checkpoint = torch.load(args.resume_from, weights_only=False)
         
-        # Load model state dict and move to device
+        # Load model state dict
         model.load_state_dict(checkpoint['model_state_dict'])
         model = model.to(device)
         
-        # Load optimizer state dict and ensure all tensors are on the correct device
-        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-        for state in optimizer.state.values():
-            for k, v in state.items():
-                if isinstance(v, torch.Tensor):
-                    state[k] = v.to(device)
+        # Only load optimizer state if it's compatible (same optimizer type)
+        # You might want to skip loading optimizer state when switching optimizers
+        if 'optimizer_state_dict' in checkpoint:
+            try:
+                optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+                # Move optimizer tensors to device
+                for state in optimizer.state.values():
+                    for k, v in state.items():
+                        if isinstance(v, torch.Tensor):
+                            state[k] = v.to(device)
+            except:
+                print("Warning: Could not load optimizer state. Starting with fresh optimizer.")
         
-        # Load scheduler
-        scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+        # Load scheduler if available
+        if 'scheduler_state_dict' in checkpoint:
+            scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+        
         start_epoch = checkpoint['epoch'] + 1
         print(f"Resuming from epoch {start_epoch}")
 
@@ -357,6 +409,16 @@ def run():
         "./models",
         os.path.join(args.log_path, "models"),
         dirs_exist_ok=True  # Added for Python 3.8+ compatibility
+    )
+    _ = shutil.copytree(
+        "./FAdam",  # or the correct path to your FAdam folder
+        os.path.join(args.log_path, "FAdam"),
+        dirs_exist_ok=True
+    )
+    _ = shutil.copytree(
+        "./focal_loss",  # Add this line
+        os.path.join(args.log_path, "focal_loss"),
+        dirs_exist_ok=True
     )
 
     train(

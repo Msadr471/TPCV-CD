@@ -12,7 +12,7 @@ fi
 
 mkdir -p /content/Data
 
-cp "/content/drive/MyDrive/GoogleColabDrive/CustomDataset/Datasets/Tehran_Mashhad/Tehran/Dataset.zip" /content/Data/
+cp "/content/drive/MyDrive/GoogleColabDrive/CustomDataset/Dataset.zip" /content/Data/
 
 cd /content/Data
 pwd
@@ -28,7 +28,7 @@ fi
 
 ls -lh "Dataset.zip"
 
-md5sum "/content/drive/MyDrive/GoogleColabDrive/CustomDataset/Datasets/Tehran_Mashhad/Tehran/Dataset.zip"
+md5sum "/content/drive/MyDrive/GoogleColabDrive/CustomDataset/Dataset.zip"
 md5sum "/content/Data/Dataset.zip"
 
 rm -rf /content/sample_data

@@ -6,6 +6,7 @@ from metrics.metric_tool import ConfuseMatrixMeter
 from models.change_classifier import ChangeClassifier
 import argparse
 from focal_loss.focal_loss import FocalLoss
+import numpy as np
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
@@ -38,7 +39,11 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     model = ChangeClassifier()
-    model.load_state_dict(torch.load(args.modelpath, map_location=device))
+    
+    # Add safe globals for numpy scalars
+    with torch.serialization.safe_globals([np._core.multiarray.scalar]):
+        model.load_state_dict(torch.load(args.modelpath, map_location=device, weights_only=True))
+    
     model.to(device)
     model.eval()
 

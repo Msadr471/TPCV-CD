@@ -42,7 +42,7 @@ if __name__ == "__main__":
     
     # Add safe globals for numpy scalars
     with torch.serialization.safe_globals([np._core.multiarray.scalar]):
-        model.load_state_dict(torch.load(args.modelpath, map_location=device, weights_only=True))
+        model.load_state_dict(torch.load(args.modelpath, map_location=device, weights_only=False))
     
     model.to(device)
     model.eval()

@@ -66,7 +66,7 @@ if __name__ == "__main__":
             generated_mask = generated_mask.to("cpu")
             loss += criterion(generated_mask, mask)
 
-            bin_genmask = (generated_mask > 0.4).numpy()
+            bin_genmask = (generated_mask > 0.1).numpy()
             bin_genmask = bin_genmask.astype(int)
             mask = mask.numpy()
             mask = mask.astype(int)

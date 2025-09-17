@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
     tool_metric = ConfuseMatrixMeter(n_class=2)
 
-    dataset = MyDataset(args.datapath, "test")
+    dataset = MyDataset(args.datapath, "val")
     test_loader = DataLoader(dataset, batch_size=50)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -66,7 +66,7 @@ if __name__ == "__main__":
             generated_mask = generated_mask.to("cpu")
             loss += criterion(generated_mask, mask)
 
-            bin_genmask = (generated_mask > 0.1).numpy()
+            bin_genmask = (generated_mask > 0.5).numpy()
             bin_genmask = bin_genmask.astype(int)
             mask = mask.numpy()
             mask = mask.astype(int)

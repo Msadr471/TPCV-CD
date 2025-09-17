@@ -52,8 +52,8 @@ if __name__ == "__main__":
     print(f"\nNumber of model parameters {param_tot}\n")
 
     loss = 0.0
-    # criterion = torch.nn.BCELoss()
-    criterion = FocalLoss(alpha=0.90, gamma=4.0, reduction='mean')
+    criterion = torch.nn.BCELoss()
+    # criterion = FocalLoss(alpha=0.90, gamma=4.0, reduction='mean')
 
     with torch.no_grad():
         for (reference, testimg), mask in tqdm.tqdm(test_loader):

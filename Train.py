@@ -24,8 +24,8 @@ def get_git_hash():
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Parameter for data analysis and model training.")
     
-    parser.add_argument("--datapath", type=str, default='/content/Data/Mashhad')
-    parser.add_argument("--log-path", type=str, default='/content/chekpoint')
+    parser.add_argument("--datapath", type=str, default='/content/Data/Mashhad/')
+    parser.add_argument("--log-path", type=str, default='/content/chekpoint/')
     parser.add_argument("--resume-from", type=str, default=None)
     parser.add_argument("--start-epoch", type=int, default=0)
     parser.add_argument("--epochs", type=int, default=100)

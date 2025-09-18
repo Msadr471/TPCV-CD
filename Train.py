@@ -10,10 +10,10 @@ import time
 from metrics.metric_tool import ConfuseMatrixMeter
 from models.change_classifier import ChangeClassifier as Model
 from torch.utils.data import DataLoader
-from torch.utils.tensorboard import SummaryWriter
 from focal_loss.focal_loss import FocalLoss
 from FAdam.fadam import FAdam
 from datetime import datetime
+from tensorboardX import SummaryWriter
 
 def get_git_hash():
     try:

@@ -99,13 +99,17 @@ def log_metrics(phase, epoch, loss, scores, writer):
     print(f"{phase} phase summary")
     print(f"Loss for epoch {epoch} is {loss}")
     
+    # Extract the raw scores dictionary
+    scores_dict = scores['raw_dict'] if 'raw_dict' in scores else scores
+    
+    # Safely get metrics with default values of 0.0 if missing
     metrics = {
         "Loss": loss,
-        "Precision": scores["precision_1"],
-        "Recall": scores["recall_1"],
-        "OA": scores["acc"],
-        "IoU": scores["iou_1"],
-        "F1": scores["F1_1"]
+        "Precision": scores_dict.get("precision_1", 0.0),
+        "Recall": scores_dict.get("recall_1", 0.0),
+        "OA": scores_dict["acc"],  # Overall accuracy should always be present
+        "IoU": scores_dict.get("iou_1", 0.0),
+        "F1": scores_dict.get("F1_1", 0.0)
     }
     
     for name, value in metrics.items():
@@ -166,8 +170,11 @@ def train(dataset_train, dataset_val, model, criterion, optimizer, scheduler, lo
         log_metrics("val", epc, val_loss, val_scores, writer)
         
         # Update best metrics
-        for metric, value in [('val_loss', val_loss), ('f1', val_scores["F1_1"]), 
-                             ('iou', val_scores["iou_1"]), ('accuracy', val_scores["acc"])]:
+        val_scores_dict = val_scores['raw_dict'] if 'raw_dict' in val_scores else val_scores
+        for metric, value in [('val_loss', val_loss), 
+                            ('f1', val_scores_dict.get("F1_1", 0.0)), 
+                            ('iou', val_scores_dict.get("iou_1", 0.0)), 
+                            ('accuracy', val_scores_dict["acc"])]:
             if (metric == 'val_loss' and value < best_metrics[metric]) or \
                (metric != 'val_loss' and value > best_metrics[metric]):
                 best_metrics[metric] = value

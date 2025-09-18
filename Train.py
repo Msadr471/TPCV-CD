@@ -159,7 +159,7 @@ def train(dataset_train, dataset_val, model, criterion, optimizer, scheduler, lo
         # Training phase
         train_loss = train_epoch(model, criterion, optimizer, dataset_train, device, tool4metric, is_training=True)
         scores = tool4metric.get_scores()
-        log_metrics("", epc, train_loss, scores, writer)
+        log_metrics("Train", epc, train_loss, scores, writer)
         
         if train_loss < best_metrics['train_loss']:
             best_metrics['train_loss'] = train_loss
@@ -167,7 +167,7 @@ def train(dataset_train, dataset_val, model, criterion, optimizer, scheduler, lo
         # Validation phase
         val_loss = train_epoch(model, criterion, optimizer, dataset_val, device, tool4metric, is_training=False)
         val_scores = tool4metric.get_scores()
-        log_metrics("val", epc, val_loss, val_scores, writer)
+        log_metrics("Validation", epc, val_loss, val_scores, writer)
         
         # Update best metrics
         val_scores_dict = val_scores['raw_dict'] if 'raw_dict' in val_scores else val_scores

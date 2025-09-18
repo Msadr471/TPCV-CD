@@ -24,20 +24,35 @@ def get_git_hash():
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Parameter for data analysis and model training.")
     
-    parser.add_argument("--datapath", type=str, default='/content/Data/Mashhad/')
-    parser.add_argument("--log-path", type=str, default='/content/chekpoint/')
-    parser.add_argument("--resume-from", type=str, default=None)
-    parser.add_argument("--start-epoch", type=int, default=0)
-    parser.add_argument("--epochs", type=int, default=100)
-    parser.add_argument("--batch-size", type=int, default=26)
-    parser.add_argument("--learning-rate", type=float, default=0.01)
-    parser.add_argument("--weight-decay", type=float, default=0.005)
-    parser.add_argument("--optimizer", type=str, default="adamw", choices=["fadam", "adamw"])
-    parser.add_argument("--loss-function", type=str, default="bce", choices=["focal", "bce"])
-    parser.add_argument("--focal-alpha", type=float, default=0.25)
-    parser.add_argument("--focal-gamma", type=float, default=2.0)
-    parser.add_argument("--backbone", type=str, default="efficientnet_b4", choices=["efficientnet_b4", "efficientnet_b5", "efficientnet_b6", "efficientnet_b7"])
-    parser.add_argument('--gpu-id', type=int, default=0)
+    parser.add_argument("--datapath", type=str, default='/content/Data/Mashhad/',
+                        help="Path to the dataset directory")
+    parser.add_argument("--log-path", type=str, default='/content/chekpoint/',
+                        help="Path to save checkpoints and logs")
+    parser.add_argument("--resume-from", type=str, default=None,
+                        help="Path to checkpoint file to resume training from")
+    parser.add_argument("--start-epoch", type=int, default=0,
+                        help="Epoch number to start training from (when resuming)")
+    parser.add_argument("--epochs", type=int, default=100,
+                        help="Number of training epochs")
+    parser.add_argument("--batch-size", type=int, default=26,
+                        help="Batch size for training")
+    parser.add_argument("--learning-rate", type=float, default=0.01,
+                        help="Learning rate for optimizer")
+    parser.add_argument("--weight-decay", type=float, default=0.005,
+                        help="Weight decay for optimizer")
+    parser.add_argument("--optimizer", type=str, default="adamw", choices=["fadam", "adamw"],
+                        help="Optimizer to use: fadam or adamw")
+    parser.add_argument("--loss-function", type=str, default="bce", choices=["focal", "bce"],
+                        help="Loss function: focal loss or binary cross entropy")
+    parser.add_argument("--focal-alpha", type=float, default=0.25,
+                        help="Alpha parameter for focal loss")
+    parser.add_argument("--focal-gamma", type=float, default=2.0,
+                        help="Gamma parameter for focal loss")
+    parser.add_argument("--backbone", type=str, default="efficientnet_b4", 
+                        choices=["efficientnet_b4", "efficientnet_b5", "efficientnet_b6", "efficientnet_b7"],
+                        help="Backbone architecture for the model")
+    parser.add_argument('--gpu-id', type=int, default=0,
+                        help="GPU ID to use (if multiple GPUs available)")
 
     args = parser.parse_args()
 

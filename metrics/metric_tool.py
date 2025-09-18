@@ -142,8 +142,53 @@ def cm2score(confusion_matrix):
     score_dict.update(cls_F1)
     score_dict.update(cls_precision)
     score_dict.update(cls_recall)
-    return score_dict
 
+    
+    # Convert numpy types to native Python types for better printing
+    for key, value in score_dict.items():
+        if hasattr(value, 'item'):
+            score_dict[key] = value.item()
+    
+    # Format the output for better readability
+    formatted_output = format_metrics_output(score_dict, n_class)
+    
+    return formatted_output
+
+def format_metrics_output(scores_dict, n_class):
+    """Format the metrics into a readable string output"""
+    output_lines = []
+    output_lines.append("=" * 60)
+    output_lines.append("EVALUATION METRICS SUMMARY")
+    output_lines.append("=" * 60)
+    
+    # Main metrics
+    output_lines.append(f"Overall Accuracy: {scores_dict['acc']:.6f}")
+    output_lines.append(f"Mean IoU:        {scores_dict['miou']:.6f}")
+    output_lines.append(f"Mean F1 Score:   {scores_dict['mf1']:.6f}")
+    output_lines.append("")
+    
+    # Class-wise metrics
+    output_lines.append("CLASS-WISE METRICS:")
+    output_lines.append("-" * 40)
+    
+    class_names = ["No Change", "Change"]
+    for i in range(n_class):
+        class_name = class_names[i] if i < len(class_names) else f"Class {i}"
+        output_lines.append(f"{class_name}:")
+        output_lines.append(f"  IoU:       {scores_dict[f'iou_{i}']:.6f}")
+        output_lines.append(f"  F1 Score:  {scores_dict[f'F1_{i}']:.6f}")
+        output_lines.append(f"  Precision: {scores_dict[f'precision_{i}']:.6f}")
+        output_lines.append(f"  Recall:    {scores_dict[f'recall_{i}']:.6f}")
+        if i < n_class - 1:
+            output_lines.append("")
+    
+    output_lines.append("=" * 60)
+    
+    # Return both the formatted string and the raw dictionary
+    return {
+        'formatted_output': '\n'.join(output_lines),
+        'raw_dict': scores_dict
+    }
 
 def get_confuse_matrix(num_classes, label_gts, label_preds):
     def __fast_hist(label_gt, label_pred):

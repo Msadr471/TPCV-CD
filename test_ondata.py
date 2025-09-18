@@ -22,6 +22,46 @@ def parse_arguments():
         "--modelpath",
         type=str,
         help="model path",
+        default="/content/Data/chekpoint",
+    )
+    parser.add_argument(
+        "--backbone",
+        type=str,
+        default="efficientnet_b4",
+        choices=["efficientnet_b4", "efficientnet_b5", "efficientnet_b6", "efficientnet_b7"],
+        help="Backbone network used in the model"
+    )
+    parser.add_argument(
+        "--dataset-type",
+        type=str,
+        default="test",
+        choices=["val", "test"],
+        help="Dataset type to use for testing (val or test)"
+    )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=50,
+        help="Batch size for testing"
+    )
+    parser.add_argument(
+        "--loss-function",
+        type=str,
+        default="bce",
+        choices=["bce", "focal"],
+        help="Loss function to use (bce or focal)"
+    )
+    parser.add_argument(
+        "--focal-alpha",
+        type=float,
+        default=0.90,
+        help="Alpha parameter for Focal Loss (if used)"
+    )
+    parser.add_argument(
+        "--focal-gamma",
+        type=float,
+        default=4.0,
+        help="Gamma parameter for Focal Loss (if used)"
     )
 
     parsed_arguments = parser.parse_args()
@@ -33,12 +73,12 @@ if __name__ == "__main__":
 
     tool_metric = ConfuseMatrixMeter(n_class=2)
 
-    dataset = MyDataset(args.datapath, "val")
-    test_loader = DataLoader(dataset, batch_size=50)
+    dataset = MyDataset(args.datapath, args.dataset_type)
+    test_loader = DataLoader(dataset, batch_size=args.batch_size)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model = ChangeClassifier()
+    model = ChangeClassifier(bkbn_name=args.backbone)
 
     # Add safe globals for numpy scalars
     with torch.serialization.safe_globals([np._core.multiarray.scalar]):
@@ -52,8 +92,14 @@ if __name__ == "__main__":
     print(f"\nNumber of model parameters {param_tot}\n")
 
     loss = 0.0
-    criterion = torch.nn.BCELoss()
-    # criterion = FocalLoss(alpha=0.90, gamma=4.0, reduction='mean')
+    
+    # Select loss function based on argument
+    if args.loss_function == "focal":
+        criterion = FocalLoss(alpha=args.focal_alpha, gamma=args.focal_gamma, reduction='mean')
+        print(f"Using Focal Loss with alpha={args.focal_alpha}, gamma={args.focal_gamma}")
+    else:
+        criterion = torch.nn.BCELoss()
+        print("Using BCE Loss")
 
     with torch.no_grad():
         for (reference, testimg), mask in tqdm.tqdm(test_loader):
@@ -74,8 +120,14 @@ if __name__ == "__main__":
 
         loss /= len(test_loader)
         print("Test summary")
+        print(f"Dataset: {args.dataset_type}")
+        print(f"Batch size: {args.batch_size}")
+        print(f"Loss function: {args.loss_function.upper()}")
         print("Loss is {}".format(loss))
         print()
 
-        scores_dictionary = tool_metric.get_scores()
-        print(scores_dictionary)
+        scores_result = tool_metric.get_scores()
+        print(scores_result['formatted_output'])
+        print("\nRaw metrics (for reference):")
+        for key, value in scores_result.items():
+            print(f"  {key}: {value}")

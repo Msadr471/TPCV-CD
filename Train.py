@@ -32,21 +32,21 @@ def parse_arguments():
                         help="Path to checkpoint file to resume training from")
     parser.add_argument("--start-epoch", type=int, default=0,
                         help="Epoch number to start training from (when resuming)")
-    parser.add_argument("--epochs", type=int, default=100,
+    parser.add_argument("--epochs", type=int, default=1e+2,
                         help="Number of training epochs")
     parser.add_argument("--batch-size", type=int, default=26,
                         help="Batch size for training")
-    parser.add_argument("--learning-rate", type=float, default=0.01,
+    parser.add_argument("--learning-rate", type=float, default=1e-2,
                         help="Learning rate for optimizer")
-    parser.add_argument("--weight-decay", type=float, default=0.005,
+    parser.add_argument("--weight-decay", type=float, default=5e-3,
                         help="Weight decay for optimizer")
     parser.add_argument("--optimizer", type=str, default="adamw", choices=["fadam", "adamw"],
                         help="Optimizer to use: fadam or adamw")
     parser.add_argument("--loss-function", type=str, default="bce", choices=["focal", "bce"],
                         help="Loss function: focal loss or binary cross entropy")
-    parser.add_argument("--focal-alpha", type=float, default=0.25,
+    parser.add_argument("--focal-alpha", type=float, default=2.5e-1,
                         help="Alpha parameter for focal loss")
-    parser.add_argument("--focal-gamma", type=float, default=2.0,
+    parser.add_argument("--focal-gamma", type=float, default=2e+0,
                         help="Gamma parameter for focal loss")
     parser.add_argument("--backbone", type=str, default="efficientnet_b4", 
                         choices=["efficientnet_b4", "efficientnet_b5", "efficientnet_b6", "efficientnet_b7"],
@@ -80,7 +80,7 @@ def create_criterion(args, loss_type='bce'):
 def create_optimizer(model, args, optimizer_type='adamw'):
     if optimizer_type == 'fadam':
         return FAdam(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay,
-                    betas=(0.9, 0.999), clip=1.0, p=0.5, eps=1e-8)
+                    betas=(9e-1, 9.99e-1), clip=1e+0, p=5e-1, eps=1e-8)
     elif optimizer_type == 'adamw':
         return torch.optim.AdamW(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
     raise ValueError(f"Unknown optimizer type: {optimizer_type}")
@@ -89,7 +89,7 @@ def evaluate(model, criterion, tool4metric, device, reference, testimg, mask):
     reference, testimg, mask = reference.to(device).float(), testimg.to(device).float(), mask.to(device).float()
     generated_mask = model(reference, testimg).squeeze(1)
     
-    bin_genmask = (generated_mask.to("cpu") > 0.5).detach().numpy().astype(int)
+    bin_genmask = (generated_mask.to("cpu") > 5e-1).detach().numpy().astype(int)
     mask_np = mask.to("cpu").numpy().astype(int)
     tool4metric.update_cm(pr=bin_genmask, gt=mask_np)
     
@@ -200,9 +200,9 @@ def train(dataset_train, dataset_val, model, criterion, optimizer, scheduler, lo
         scheduler.step()
 
 def run():
-    torch.manual_seed(42)
-    random.seed(42)
-    np.random.seed(42)
+    torch.manual_seed(4.2e+1)
+    random.seed(4.2e+1)
+    np.random.seed(4.2e+1)
     
     args = parse_arguments()
     writer = SummaryWriter(log_dir=args.log_path)

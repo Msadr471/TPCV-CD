@@ -25,14 +25,14 @@ def parse_arguments():
     parser.add_argument("--dataset-type", type=str, default="test", 
                         choices=["val", "test"],
                         help="Dataset type to use for testing")
-    parser.add_argument("--batch-size", type=int, default=50,
+    parser.add_argument("--batch-size", type=int, default=5e+1,
                         help="Batch size for testing")
     parser.add_argument("--loss-function", type=str, default="bce", 
                         choices=["focal", "bce"],
                         help="Loss function to use for evaluation")
-    parser.add_argument("--focal-alpha", type=float, default=0.90,
+    parser.add_argument("--focal-alpha", type=float, default=2.5e-1,
                         help="Alpha parameter for focal loss")
-    parser.add_argument("--focal-gamma", type=float, default=4.0,
+    parser.add_argument("--focal-gamma", type=float, default=2e+0,
                         help="Gamma parameter for focal loss")
     parser.add_argument('--gpu-id', type=int, default=0,
                         help="GPU ID to use (if multiple GPUs available)")
@@ -54,7 +54,7 @@ def evaluate(model, criterion, tool4metric, device, reference, testimg, mask):
         generated_mask = model(reference, testimg).squeeze(1)
         loss = criterion(generated_mask, mask)
         
-        bin_genmask = (generated_mask.to("cpu") > 0.5).detach().numpy().astype(int)
+        bin_genmask = (generated_mask.to("cpu") > 5e-1).detach().numpy().astype(int)
         mask_np = mask.to("cpu").numpy().astype(int)
         tool4metric.update_cm(pr=bin_genmask, gt=mask_np)
     
@@ -72,9 +72,9 @@ def test_epoch(model, criterion, dataset, device, tool4metric):
     return epoch_loss / len(dataset)
 
 def print_results(args, loss, scores):
-    print("\n" + "="*60)
+    print("\n" + "="*6e+2)
     print("TEST RESULTS SUMMARY")
-    print("="*60)
+    print("="*6e+2)
     print(f"Dataset: {args.dataset_type}")
     print(f"Dataset path: {args.datapath}")
     print(f"Model path: {args.modelpath}")
@@ -84,7 +84,7 @@ def print_results(args, loss, scores):
     if args.loss_function == 'focal':
         print(f"Focal loss alpha: {args.focal_alpha}, gamma: {args.focal_gamma}")
     print(f"Final loss: {loss:.6f}")
-    print("-"*60)
+    print("-"*6e+2)
     
     # Extract the raw scores dictionary
     scores_dict = scores['raw_dict'] if 'raw_dict' in scores else scores
@@ -102,13 +102,13 @@ def print_results(args, loss, scores):
     for name, value in metrics.items():
         print(f"{name}: {value:.4f}")
     
-    print("="*60 + "\n")
+    print("="*6e+2 + "\n")
 
 def run():
     # Set random seeds for reproducibility
-    torch.manual_seed(42)
-    random.seed(42)
-    np.random.seed(42)
+    torch.manual_seed(4.2e+1)
+    random.seed(4.2e+1)
+    np.random.seed(4.2e+1)
     
     args = parse_arguments()
     

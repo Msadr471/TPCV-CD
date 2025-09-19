@@ -32,9 +32,9 @@ def parse_arguments():
                         help="Path to checkpoint file to resume training from")
     parser.add_argument("--start-epoch", type=int, default=0,
                         help="Epoch number to start training from (when resuming)")
-    parser.add_argument("--epochs", type=int, default=101,
+    parser.add_argument("--epochs", type=int, default=100,
                         help="Number of training epochs")
-    parser.add_argument("--batch-size", type=int, default=24,
+    parser.add_argument("--batch-size", type=int, default=20,
                         help="Batch size for training")
     parser.add_argument("--learning-rate", type=float, default=1.e-2,
                         help="Learning rate for optimizer")

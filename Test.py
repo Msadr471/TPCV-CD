@@ -25,7 +25,7 @@ def parse_arguments():
     parser.add_argument("--dataset-type", type=str, default="test", 
                         choices=["val", "test"],
                         help="Dataset type to use for testing")
-    parser.add_argument("--batch-size", type=int, default=5.e+1,
+    parser.add_argument("--batch-size", type=int, default=50,
                         help="Batch size for testing")
     parser.add_argument("--loss-function", type=str, default="bce", 
                         choices=["focal", "bce"],

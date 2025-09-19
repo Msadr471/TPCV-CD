@@ -34,7 +34,7 @@ def parse_arguments():
                         help="Epoch number to start training from (when resuming)")
     parser.add_argument("--epochs", type=int, default=1e+2,
                         help="Number of training epochs")
-    parser.add_argument("--batch-size", type=int, default=26,
+    parser.add_argument("--batch-size", type=int, default=2.6e+1,
                         help="Batch size for training")
     parser.add_argument("--learning-rate", type=float, default=1e-2,
                         help="Learning rate for optimizer")

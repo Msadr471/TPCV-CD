@@ -213,7 +213,7 @@ def run():
     train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
     val_loader = DataLoader(val_data, batch_size=args.batch_size, shuffle=True)
     
-    device = torch.device(f'CUDA: {args.gpu_id}' if torch.cuda.is_available() else 'cpu')
+    device = torch.device(f'cuda:{args.gpu_id}' if torch.cuda.is_available() else 'cpu')
     print(f'Current Device: {device}\n')
     
     model = Model(bkbn_name=args.backbone)

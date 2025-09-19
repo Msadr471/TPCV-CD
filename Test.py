@@ -106,9 +106,9 @@ def print_results(args, loss, scores):
 
 def run():
     # Set random seeds for reproducibility
-    torch.manual_seed(4.2e+1)
-    random.seed(4.2e+1)
-    np.random.seed(4.2e+1)
+    torch.manual_seed(42)
+    random.seed(42)
+    np.random.seed(42)
     
     args = parse_arguments()
     

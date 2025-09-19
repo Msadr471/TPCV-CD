@@ -200,9 +200,9 @@ def train(dataset_train, dataset_val, model, criterion, optimizer, scheduler, lo
         scheduler.step()
 
 def run():
-    torch.manual_seed(4.2e+1)
-    random.seed(4.2e+1)
-    np.random.seed(4.2e+1)
+    torch.manual_seed(42)
+    random.seed(42)
+    np.random.seed(42)
     
     args = parse_arguments()
     writer = SummaryWriter(log_dir=args.log_path)

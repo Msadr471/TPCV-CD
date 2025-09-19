@@ -36,17 +36,17 @@ def parse_arguments():
                         help="Number of training epochs")
     parser.add_argument("--batch-size", type=int, default=20,
                         help="Batch size for training")
-    parser.add_argument("--learning-rate", type=float, default=1.e-2,
+    parser.add_argument("--learning-rate", type=float, default=0.001,
                         help="Learning rate for optimizer")
-    parser.add_argument("--weight-decay", type=float, default=5.e-3,
+    parser.add_argument("--weight-decay", type=float, default=0.005,
                         help="Weight decay for optimizer")
     parser.add_argument("--optimizer", type=str, default="adamw", choices=["fadam", "adamw"],
                         help="Optimizer to use: fadam or adamw")
     parser.add_argument("--loss-function", type=str, default="bce", choices=["focal", "bce"],
                         help="Loss function: focal loss or binary cross entropy")
-    parser.add_argument("--focal-alpha", type=float, default=2.5e-1,
+    parser.add_argument("--focal-alpha", type=float, default=0.25,
                         help="Alpha parameter for focal loss")
-    parser.add_argument("--focal-gamma", type=float, default=2.e+0,
+    parser.add_argument("--focal-gamma", type=float, default=2,
                         help="Gamma parameter for focal loss")
     parser.add_argument("--backbone", type=str, default="efficientnet_b4", 
                         choices=["efficientnet_b4", "efficientnet_b5", "efficientnet_b6", "efficientnet_b7"],
@@ -80,7 +80,7 @@ def create_criterion(args, loss_type='bce'):
 def create_optimizer(model, args, optimizer_type='adamw'):
     if optimizer_type == 'fadam':
         return FAdam(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay,
-                    betas=(9.e-1, 9.99e-1), clip=1.e+0, p=5.e-1, eps=1.e-8)
+                    betas=(0.9, 0.999), clip=1, p=0.5, eps=1.e-8)
     elif optimizer_type == 'adamw':
         return torch.optim.AdamW(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
     raise ValueError(f"Unknown optimizer type: {optimizer_type}")
@@ -89,7 +89,7 @@ def evaluate(model, criterion, tool4metric, device, reference, testimg, mask):
     reference, testimg, mask = reference.to(device).float(), testimg.to(device).float(), mask.to(device).float()
     generated_mask = model(reference, testimg).squeeze(1)
     
-    bin_genmask = (generated_mask.to("cpu") > 5.e-1).detach().numpy().astype(int)
+    bin_genmask = (generated_mask.to("cpu") > 0.5).detach().numpy().astype(int)
     mask_np = mask.to("cpu").numpy().astype(int)
     tool4metric.update_cm(pr=bin_genmask, gt=mask_np)
     

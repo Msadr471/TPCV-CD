@@ -15,7 +15,7 @@ from models.change_classifier import ChangeClassifier as Model
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Parameter for model testing.")
     
-    parser.add_argument("--datapath", type=str, default='/content/Data/Dataset/',
+    parser.add_argument("--datapath", type=str, default='/content/Data/Mashhad/',
                         help="Path to the dataset directory")
     parser.add_argument("--modelpath", type=str, default='/content/Data/chekpoint/',
                         help="Path to the model checkpoint file")

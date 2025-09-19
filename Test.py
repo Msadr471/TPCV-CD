@@ -72,9 +72,9 @@ def test_epoch(model, criterion, dataset, device, tool4metric):
     return epoch_loss / len(dataset)
 
 def print_results(args, loss, scores):
-    print("\n" + "="*6.e+1)
+    print("\n" + "="*60)
     print("TEST RESULTS SUMMARY")
-    print("="*6.e+1)
+    print("="*60)
     print(f"Dataset: {args.dataset_type}")
     print(f"Dataset path: {args.datapath}")
     print(f"Model path: {args.modelpath}")
@@ -84,7 +84,7 @@ def print_results(args, loss, scores):
     if args.loss_function == 'focal':
         print(f"Focal loss alpha: {args.focal_alpha}, gamma: {args.focal_gamma}")
     print(f"Final loss: {loss:.6f}")
-    print("-"*6.e+1)
+    print("-"*60)
     
     # Extract the raw scores dictionary
     scores_dict = scores['raw_dict'] if 'raw_dict' in scores else scores
@@ -102,7 +102,7 @@ def print_results(args, loss, scores):
     for name, value in metrics.items():
         print(f"{name}: {value:.4f}")
     
-    print("="*6.e+1 + "\n")
+    print("="*60 + "\n")
 
 def run():
     # Set random seeds for reproducibility

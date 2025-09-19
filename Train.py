@@ -60,7 +60,7 @@ def parse_arguments():
         os.makedirs(args.log_path, exist_ok=True)
 
     dataset_name = os.path.basename(os.path.normpath(args.datapath))
-    base_run_name = f"DT_{dataset_name}_EP_{args.epochs}_BS_{args.batch_size}_LF_{args.loss_function}_OP_{args.optimizer}_LR_{args.learning_rate}_WD_{args.weight_decay}_BB_{args.backbone}"
+    base_run_name = f"DT_{dataset_name}_LF_{args.loss_function}_OP_{args.optimizer}_EP_{args.epochs}_BS_{args.batch_size}_LR_{args.learning_rate}"
     
     dir_run = sorted([f for f in os.listdir(args.log_path) if f.startswith(base_run_name + "_")])
     num_run = int(dir_run[-1].split("_")[-1]) + 1 if dir_run else 0

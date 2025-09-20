@@ -238,7 +238,7 @@ def run():
     print(f"Number of model parameters: {sum(p.numel() for p in model.parameters())}\n")
     
     # Call this after model initialization
-    print_model_memory_usage(model)
+    # print_model_memory_usage(model)
     
     criterion = create_criterion(args, args.loss_function)
     optimizer = create_optimizer(model, args, args.optimizer)

@@ -80,6 +80,7 @@ class ChangeClassifier(Module):
         
         return ModuleList(mixing_blocks), up_dims
 
+
     def forward(self, ref: Tensor, test: Tensor) -> Tensor:
         features = self._encode(ref, test)
         latents = self._decode(features)
@@ -89,10 +90,10 @@ class ChangeClassifier(Module):
         ref = self._retina(ref)
         test = self._retina(test)
         features = [self._first_mix(ref, test)]
-        # Skip the first layer (stem)
-        for i, layer in enumerate(self._backbone[1:], 1):
+        for num, layer in enumerate(self._backbone):
             ref, test = layer(ref), layer(test)
-            features.append(self._mixing_mask[i - 1](ref, test))
+            if num != 0:  # Skip layer 0 (the stem)
+                features.append(self._mixing_mask[num - 1](ref, test))
         return features
 
     def _decode(self, features) -> Tensor:
@@ -100,6 +101,7 @@ class ChangeClassifier(Module):
         for i, j in enumerate(range(-2, -5, -1)):
             upping = self._up[i](upping, features[j])
         return upping
+
 
 def _get_backbone(
     bkbn_name, weights, output_layer_bkbn, freeze_backbone

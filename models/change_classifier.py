@@ -1,4 +1,5 @@
 from typing import List
+import torch
 import torchvision
 from models.layers import MixingMaskAttentionBlock, PixelwiseLinear, UpMask, MixingBlock, RetinaSimBlock
 from torch import Tensor
@@ -106,14 +107,15 @@ class ChangeClassifier(Module):
 def _get_backbone(
     bkbn_name, weights, output_layer_bkbn, freeze_backbone
 ) -> ModuleList:
-    # The whole model:
-    entire_model = getattr(torchvision.models, bkbn_name)(
-        weights=weights
-    ).features
-
+    # Get the model class
+    model_class = getattr(torchvision.models, bkbn_name)
+    
+    # Load only the features, not the entire model
+    features = model_class(weights=weights).features
+    
     # Slicing it:
     derived_model = ModuleList([])
-    for name, layer in entire_model.named_children():
+    for name, layer in features.named_children():
         derived_model.append(layer)
         if name == output_layer_bkbn:
             break
@@ -122,4 +124,10 @@ def _get_backbone(
     if freeze_backbone:
         for param in derived_model.parameters():
             param.requires_grad = False
+    
+    # Clear memory by deleting the full model
+    del features
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        
     return derived_model

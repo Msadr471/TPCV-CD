@@ -230,10 +230,6 @@ def run():
     # Use memory-efficient practices
     torch.backends.cudnn.benchmark = True  # Optimizes convolution algorithms
     
-    # Use mixed precision if available
-    if torch.cuda.is_available():
-        scaler = torch.cuda.amp.GradScaler()
-    
     model = Model(bkbn_name=args.backbone)
     print(f"Number of model parameters: {sum(p.numel() for p in model.parameters())}\n")
     

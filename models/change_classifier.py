@@ -110,8 +110,9 @@ def _get_backbone(
     # Get the model class
     model_class = getattr(torchvision.models, bkbn_name)
     
-    # Load only the features, not the entire model
-    features = model_class(weights=weights).features
+    # Load only the features, not the entire model - FIXED
+    model = model_class(weights=weights)
+    features = model.features
     
     # Slicing it:
     derived_model = ModuleList([])
@@ -126,6 +127,7 @@ def _get_backbone(
             param.requires_grad = False
     
     # Clear memory by deleting the full model
+    del model
     del features
     if torch.cuda.is_available():
         torch.cuda.empty_cache()

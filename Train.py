@@ -3,6 +3,7 @@ import os
 import shutil
 import dataset.dataset as dtset
 import torch
+import gc
 import numpy as np
 import random
 import subprocess
@@ -235,6 +236,10 @@ def run():
     
     # Call this after model initialization
     # print_model_memory_usage(model)
+    
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
     
     criterion = create_criterion(args, args.loss_function)
     optimizer = create_optimizer(model, args, args.optimizer)

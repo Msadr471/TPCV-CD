@@ -119,25 +119,28 @@ def _get_backbone(
     model_class = getattr(torchvision.models, bkbn_name)
     
     # Load only the features, not the entire model - FIXED
-    model = model_class(weights=weights)
-    features = model.features
-    
-    # Slicing it:
-    derived_model = ModuleList([])
-    for name, layer in features.named_children():
-        derived_model.append(layer)
-        if name == output_layer_bkbn:
-            break
-
-    # Freezing the backbone weights:
-    if freeze_backbone:
-        for param in derived_model.parameters():
-            param.requires_grad = False
-    
-    # Clear memory by deleting the full model
-    del model
-    del features
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
+    with torch.no_grad():  # Prevent tracking gradients for the backbone
+        model = model_class(weights=weights)
+        features = model.features
         
+        # Slicing it:
+        derived_model = ModuleList([])
+        for name, layer in features.named_children():
+            derived_model.append(layer)
+            if name == output_layer_bkbn:
+                break
+
+        # Freezing the backbone weights:
+        if freeze_backbone:
+            for param in derived_model.parameters():
+                param.requires_grad = False
+        
+        # Clear memory by deleting the full model and forcing garbage collection
+        del model
+        del features
+        import gc
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            
     return derived_model

@@ -4,7 +4,7 @@ import torchvision
 from models.layers import MixingMaskAttentionBlock, PixelwiseLinear, UpMask, MixingBlock, RetinaSimBlock
 from torch import Tensor
 from torch.nn import Module, ModuleList, Sigmoid
-from torchvision.models import EfficientNet_B4_Weights, EfficientNet_B5_Weights, EfficientNet_B6_Weights, EfficientNet_B7_Weights
+import torchvision.models as models
 
 class ChangeClassifier(Module):
     def __init__(
@@ -39,12 +39,12 @@ class ChangeClassifier(Module):
 
     def _get_default_weights(self, bkbn_name):
         weight_map = {
-            "efficientnet_b4": EfficientNet_B4_Weights.DEFAULT,
-            "efficientnet_b5": EfficientNet_B5_Weights.DEFAULT,
-            "efficientnet_b6": EfficientNet_B6_Weights.DEFAULT,
-            "efficientnet_b7": EfficientNet_B7_Weights.DEFAULT,
+            "efficientnet_b4": models.EfficientNet_B4_Weights.DEFAULT,
+            "efficientnet_b5": models.EfficientNet_B5_Weights.DEFAULT, 
+            "efficientnet_b6": models.EfficientNet_B6_Weights.DEFAULT,
+            "efficientnet_b7": models.EfficientNet_B7_Weights.DEFAULT,
         }
-        return weight_map.get(bkbn_name, EfficientNet_B4_Weights.DEFAULT)
+        return weight_map.get(bkbn_name, models.EfficientNet_B4_Weights.DEFAULT)
     
     def _create_backbone_specific_layers(self, bkbn_name):
         if bkbn_name == "efficientnet_b4":

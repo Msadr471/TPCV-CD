@@ -199,6 +199,14 @@ def train(dataset_train, dataset_val, model, criterion, optimizer, scheduler, lo
         
         scheduler.step()
 
+def print_model_memory_usage(model):
+    total_params = 0
+    for name, param in model.named_parameters():
+        if param.requires_grad:
+            total_params += param.numel()
+            print(f"{name}: {param.numel():,} parameters")
+    print(f"Total trainable parameters: {total_params:,}")
+
 def run():
     torch.manual_seed(42)
     random.seed(42)
@@ -216,8 +224,21 @@ def run():
     device = torch.device(f'cuda:{args.gpu_id}' if torch.cuda.is_available() else 'cpu')
     print(f'Current Device: {device}\n')
     
+    # Clear cache before training
+    torch.cuda.empty_cache()
+    
+    # Use memory-efficient practices
+    torch.backends.cudnn.benchmark = True  # Optimizes convolution algorithms
+    
+    # Use mixed precision if available
+    if torch.cuda.is_available():
+        scaler = torch.cuda.amp.GradScaler()
+    
     model = Model(bkbn_name=args.backbone)
     print(f"Number of model parameters: {sum(p.numel() for p in model.parameters())}\n")
+    
+    # Call this after model initialization
+    print_model_memory_usage(model)
     
     criterion = create_criterion(args, args.loss_function)
     optimizer = create_optimizer(model, args, args.optimizer)

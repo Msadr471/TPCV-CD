@@ -16,12 +16,6 @@ from FAdam.fadam import FAdam
 from datetime import datetime
 from tensorboardX import SummaryWriter
 
-def get_git_hash():
-    try:
-        return subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
-    except:
-        return "unknown"
-
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Parameter for data analysis and model training.")
     
@@ -191,7 +185,6 @@ def train(dataset_train, dataset_val, model, criterion, optimizer, scheduler, lo
                 'training_args': training_args,
                 'learning_rate': scheduler.get_last_lr()[0],
                 'best_metrics': best_metrics,
-                'git_hash': get_git_hash(),
                 'timestamp': datetime.now().isoformat(),
                 'training_time': time.time() - start_time,
                 'dataset_name': dataset_name,

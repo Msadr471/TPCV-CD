@@ -91,20 +91,32 @@ class ChangeClassifier(Module):
 def _get_backbone(
     bkbn_name, weights, output_layer_bkbn, freeze_backbone
 ) -> ModuleList:
-    # The whole model:
-    entire_model = getattr(torchvision.models, bkbn_name)(
-        weights=weights
-    ).features
+    # Get the model class
+    model_class = getattr(torchvision.models, bkbn_name)
+    
+    # Load only the features, not the entire model - FIXED
+    with torch.no_grad():  # Prevent tracking gradients for the backbone
+        model = model_class(weights=weights)
+        features = model.features
+        
+        # Slicing it:
+        derived_model = ModuleList([])
+        for name, layer in features.named_children():
+            derived_model.append(layer)
+            if name == output_layer_bkbn:
+                break
 
-    # Slicing it:
-    derived_model = ModuleList([])
-    for name, layer in entire_model.named_children():
-        derived_model.append(layer)
-        if name == output_layer_bkbn:
-            break
-
-    # Freezing the backbone weights:
-    if freeze_backbone:
-        for param in derived_model.parameters():
-            param.requires_grad = False
+        # Freezing the backbone weights:
+        if freeze_backbone:
+            for param in derived_model.parameters():
+                param.requires_grad = False
+        
+        # Clear memory by deleting the full model and forcing garbage collection
+        del model
+        del features
+        import gc
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            
     return derived_model

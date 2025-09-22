@@ -157,36 +157,17 @@ def cm2score(confusion_matrix):
 def format_metrics_output(scores_dict, n_class):
     """Format the metrics into a readable string output"""
     output_lines = []
-    output_lines.append("=" * 60)
-    output_lines.append("EVALUATION METRICS SUMMARY")
-    output_lines.append("=" * 60)
     
     # Main metrics
-    output_lines.append(f"Overall Accuracy: {scores_dict['acc']:.6f}")
-    output_lines.append(f"Mean IoU:        {scores_dict['miou']:.6f}")
-    output_lines.append(f"Mean F1 Score:   {scores_dict['mf1']:.6f}")
-    output_lines.append("")
+    output_lines.append(f"OA: {scores_dict['acc']:.4f} | mIoU: {scores_dict['miou']:.4f} | mF1: {scores_dict['mf1']:.4f}")
     
-    # Class-wise metrics
-    output_lines.append("CLASS-WISE METRICS:")
-    output_lines.append("-" * 40)
+    # Class-wise metrics (only show change class for binary segmentation)
+    if n_class >= 2:
+        output_lines.append(f"Change: IoU: {scores_dict.get('iou_1', 0.0):.4f} | F1: {scores_dict.get('F1_1', 0.0):.4f} | "
+                          f"Prec: {scores_dict.get('precision_1', 0.0):.4f} | Rec: {scores_dict.get('recall_1', 0.0):.4f}")
     
-    class_names = ["No Change", "Change"]
-    for i in range(n_class):
-        class_name = class_names[i] if i < len(class_names) else f"Class {i}"
-        output_lines.append(f"{class_name}:")
-        output_lines.append(f"  IoU:       {scores_dict[f'iou_{i}']:.6f}")
-        output_lines.append(f"  F1 Score:  {scores_dict[f'F1_{i}']:.6f}")
-        output_lines.append(f"  Precision: {scores_dict[f'precision_{i}']:.6f}")
-        output_lines.append(f"  Recall:    {scores_dict[f'recall_{i}']:.6f}")
-        if i < n_class - 1:
-            output_lines.append("")
-    
-    output_lines.append("=" * 60)
-    
-    # Return both the formatted string and the raw dictionary
     return {
-        'formatted_output': '\n'.join(output_lines),
+        'formatted_output': ' | '.join(output_lines),
         'raw_dict': scores_dict
     }
 

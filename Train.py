@@ -92,14 +92,21 @@ def log_metrics(phase, epoch, loss, scores):
     print(f"{phase} phase summary")
     print(f"Loss for epoch {epoch} is {loss}")
     
-    # Extract the raw scores dictionary
-    scores_dict = scores['raw_dict'] if 'raw_dict' in scores else scores
+    # Extract the raw scores dictionary from the new format
+    if isinstance(scores, dict) and 'raw_dict' in scores:
+        scores_dict = scores['raw_dict']
+        # Also print the formatted output if available
+        if 'formatted_output' in scores:
+            print(scores['formatted_output'])
+    else:
+        # Fallback for old format
+        scores_dict = scores
     
-    # Safely get metrics with default values of 0.0 if missing
+    # Safely get metrics with proper handling
     metrics = {
         "Precision": scores_dict.get("precision_1", 0.0),
         "Recall": scores_dict.get("recall_1", 0.0),
-        "OA": scores_dict["acc"],  # Overall accuracy should always be present
+        "OA": scores_dict.get("acc", 0.0),
         "IoU": scores_dict.get("iou_1", 0.0),
         "F1": scores_dict.get("F1_1", 0.0)
     }

@@ -6,14 +6,12 @@ import torch
 import gc
 import numpy as np
 import random
-import subprocess
 import time
 from metrics.metric_tool import ConfuseMatrixMeter
 from models.change_classifier import ChangeClassifier as Model
 from torch.utils.data import DataLoader
 from focal_loss.focal_loss import FocalLoss
 from FAdam.fadam import FAdam
-from datetime import datetime
 from tensorboardX import SummaryWriter
 
 def parse_arguments():
@@ -23,10 +21,6 @@ def parse_arguments():
                         help="Path to the dataset directory")
     parser.add_argument("--log-path", type=str, default='/content/chekpoint/',
                         help="Path to save checkpoints and logs")
-    parser.add_argument("--resume-from", type=str, default=None,
-                        help="Path to checkpoint file to resume training from")
-    parser.add_argument("--start-epoch", type=int, default=0,
-                        help="Epoch number to start training from (when resuming)")
     parser.add_argument("--epochs", type=int, default=101,
                         help="Number of training epochs")
     parser.add_argument("--batch-size", type=int, default=4,
@@ -43,9 +37,6 @@ def parse_arguments():
                         help="Alpha parameter for focal loss")
     parser.add_argument("--focal-gamma", type=float, default=2,
                         help="Gamma parameter for focal loss")
-    parser.add_argument("--backbone", type=str, default="efficientnet_b4", 
-                        choices=["efficientnet_b4", "efficientnet_b5", "efficientnet_b6", "efficientnet_b7"],
-                        help="Backbone architecture for the model")
     parser.add_argument('--gpu-id', type=int, default=0,
                         help="GPU ID to use (if multiple GPUs available)")
 
@@ -134,7 +125,7 @@ def train_epoch(model, criterion, optimizer, dataset, device, tool4metric, is_tr
     return epoch_loss / len(dataset)
 
 def train(dataset_train, dataset_val, model, criterion, optimizer, scheduler, logpath, writer, 
-          epochs, save_after, device, start_epoch=0, training_args=None, dataset_name=None):
+          epochs, save_after, device, training_args=None, dataset_name=None):
     
     model = model.to(device)
     tool4metric = ConfuseMatrixMeter(n_class=2)
@@ -148,7 +139,7 @@ def train(dataset_train, dataset_val, model, criterion, optimizer, scheduler, lo
         'accuracy': 0
     }
     
-    for epc in range(start_epoch, epochs):
+    for epc in range(epochs):
         print(f"Epoch {epc}")
         
         # Training phase
@@ -180,14 +171,8 @@ def train(dataset_train, dataset_val, model, criterion, optimizer, scheduler, lo
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
                 'scheduler_state_dict': scheduler.state_dict(),
-                'loss': train_loss,
                 'epoch': epc,
-                'training_args': training_args,
-                'learning_rate': scheduler.get_last_lr()[0],
                 'best_metrics': best_metrics,
-                'timestamp': datetime.now().isoformat(),
-                'training_time': time.time() - start_time,
-                'dataset_name': dataset_name,
             }
             torch.save(checkpoint_data, os.path.join(logpath, f"checkpoint_{epc:03d}.pth"))
         
@@ -224,11 +209,8 @@ def run():
     # Use memory-efficient practices
     torch.backends.cudnn.benchmark = True  # Optimizes convolution algorithms
     
-    model = Model(bkbn_name=args.backbone)
+    model = Model()
     print(f"Number of model parameters: {sum(p.numel() for p in model.parameters())}\n")
-    
-    # Call this after model initialization
-    # print_model_memory_usage(model)
     
     gc.collect()
     if torch.cuda.is_available():
@@ -238,48 +220,13 @@ def run():
     optimizer = create_optimizer(model, args, args.optimizer)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
     
-    # Resume training if specified
-    start_epoch = 0
-    if args.resume_from:
-        print(f"Loading checkpoint from {args.resume_from}")
-        try:
-            checkpoint = torch.load(args.resume_from, weights_only=True)
-        except:
-            checkpoint = torch.load(args.resume_from, weights_only=False)
-        
-        model.load_state_dict(checkpoint['model_state_dict'])
-        model = model.to(device)
-        
-        if 'optimizer_state_dict' in checkpoint:
-            try:
-                optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-                for state in optimizer.state.values():
-                    for k, v in state.items():
-                        if isinstance(v, torch.Tensor):
-                            state[k] = v.to(device)
-            except:
-                print("Warning: Could not load optimizer state.")
-        
-        if 'scheduler_state_dict' in checkpoint:
-            try:
-                scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
-            except:
-                print("Warning: Could not load scheduler state.")
-        
-        if 'learning_rate' in checkpoint:
-            for param_group in optimizer.param_groups:
-                param_group['lr'] = checkpoint['learning_rate']
-        
-        start_epoch = checkpoint.get('epoch', 0) + 1
-        print(f"Resuming from epoch {start_epoch}")
-    
     # Copy configurations
     for folder in ["models", "FAdam", "focal_loss", "dataset", "metrics"]:
         shutil.copytree(f"./{folder}", os.path.join(args.log_path, folder), dirs_exist_ok=True)
     
     # Start training
     train(train_loader, val_loader, model, criterion, optimizer, scheduler, args.log_path, 
-          writer, args.epochs, 1, device, start_epoch, vars(args), 
+          writer, args.epochs, 1, device, vars(args), 
           os.path.basename(os.path.normpath(args.datapath)))
     
     writer.close()

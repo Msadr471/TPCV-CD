@@ -8,7 +8,6 @@ from torch.nn import Module, ModuleList, Sigmoid
 class ChangeClassifier(Module):
     def __init__(
         self,
-        bkbn_name="efficientnet_b4",
         weights=None,
         output_layer_bkbn="3",
         freeze_backbone=False,
@@ -17,78 +16,30 @@ class ChangeClassifier(Module):
 
         self._retina = RetinaSimBlock(in_channels=3, out_channels=3, kernel_size=15)
 
-        # Set default weights
+        # Set default weights to EfficientNet_B4_Weights.DEFAULT
         if weights is None:
-            weights = self._get_default_weights(bkbn_name)
+            from torchvision.models import EfficientNet_B4_Weights
+            weights = EfficientNet_B4_Weights.DEFAULT
 
-        # Load the weights backbone according to parameters:
+        # Load the backbone (hardcoded to efficientnet_b4)
         self._backbone = _get_backbone(
-            bkbn_name, weights, output_layer_bkbn, freeze_backbone
+            weights, output_layer_bkbn, freeze_backbone
         )
 
-        # Initialize mixing blocks:
+        # Initialize mixing blocks (hardcoded for efficientnet_b4)
         self._first_mix = MixingMaskAttentionBlock(6, 3, [3, 10, 5], [10, 5, 1])
-        self._mixing_mask, up_dims = self._create_backbone_specific_layers(bkbn_name)
+        self._mixing_mask = ModuleList([
+            MixingMaskAttentionBlock(48, 24, [24, 12, 6], [12, 6, 1]),
+            MixingMaskAttentionBlock(64, 32, [32, 16, 8], [16, 8, 1]),
+            MixingBlock(112, 56),
+        ])
+        up_dims = [(2, 56, 64), (2, 64, 64), (2, 64, 32)]
 
         # Initialize Upsampling blocks:
         self._up = ModuleList([UpMask(*dims) for dims in up_dims])
 
         # Final classification layer:
         self._classify = PixelwiseLinear([32, 16, 8], [16, 8, 1], Sigmoid())
-
-    def _get_default_weights(self, bkbn_name):
-        # Dynamically import only the needed weights class
-        if bkbn_name == "efficientnet_b4":
-            from torchvision.models import EfficientNet_B4_Weights
-            return EfficientNet_B4_Weights.DEFAULT
-        elif bkbn_name == "efficientnet_b5":
-            from torchvision.models import EfficientNet_B5_Weights
-            return EfficientNet_B5_Weights.DEFAULT
-        elif bkbn_name == "efficientnet_b6":
-            from torchvision.models import EfficientNet_B6_Weights
-            return EfficientNet_B6_Weights.DEFAULT
-        elif bkbn_name == "efficientnet_b7":
-            from torchvision.models import EfficientNet_B7_Weights
-            return EfficientNet_B7_Weights.DEFAULT
-        else:
-            from torchvision.models import EfficientNet_B4_Weights
-            return EfficientNet_B4_Weights.DEFAULT
-    
-    def _create_backbone_specific_layers(self, bkbn_name):
-        if bkbn_name == "efficientnet_b4":
-            mixing_blocks = [
-                MixingMaskAttentionBlock(48, 24, [24, 12, 6], [12, 6, 1]),
-                MixingMaskAttentionBlock(64, 32, [32, 16, 8], [16, 8, 1]),
-                MixingBlock(112, 56),
-            ]
-            up_dims = [(2, 56, 64), (2, 64, 64), (2, 64, 32)]
-            
-        elif bkbn_name == "efficientnet_b5":
-            mixing_blocks = [
-                MixingMaskAttentionBlock(48, 24, [24, 12, 6], [12, 6, 1]),
-                MixingMaskAttentionBlock(80, 40, [40, 20, 10], [20, 10, 1]),
-                MixingBlock(128, 64),
-            ]
-            up_dims = [(2, 64, 80), (2, 80, 80), (2, 80, 32)]
-            
-        elif bkbn_name == "efficientnet_b6":
-            mixing_blocks = [
-                MixingMaskAttentionBlock(64, 32, [32, 16, 8], [16, 8, 1]),
-                MixingMaskAttentionBlock(80, 40, [40, 20, 10], [20, 10, 1]),
-                MixingBlock(144, 72),
-            ]
-            up_dims = [(2, 72, 80), (2, 80, 80), (2, 80, 32)]
-            
-        elif bkbn_name == "efficientnet_b7":
-            mixing_blocks = [
-                MixingMaskAttentionBlock(64, 32, [32, 16, 8], [16, 8, 1]),
-                MixingMaskAttentionBlock(96, 48, [48, 24, 12], [24, 12, 1]),
-                MixingBlock(160, 80),
-            ]
-            up_dims = [(2, 80, 96), (2, 96, 96), (2, 96, 32)]
-        
-        return ModuleList(mixing_blocks), up_dims
-
 
     def forward(self, ref: Tensor, test: Tensor) -> Tensor:
         features = self._encode(ref, test)
@@ -113,14 +64,11 @@ class ChangeClassifier(Module):
 
 
 def _get_backbone(
-    bkbn_name, weights, output_layer_bkbn, freeze_backbone
+    weights, output_layer_bkbn, freeze_backbone
 ) -> ModuleList:
-    # Get the model class
-    model_class = getattr(torchvision.models, bkbn_name)
-    
-    # Load only the features, not the entire model - FIXED
+    # Hardcoded to efficientnet_b4
     with torch.no_grad():  # Prevent tracking gradients for the backbone
-        model = model_class(weights=weights)
+        model = torchvision.models.efficientnet_b4(weights=weights)
         features = model.features
         
         # Slicing it:

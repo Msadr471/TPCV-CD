@@ -142,8 +142,7 @@ def train(dataset_train, dataset_val, model, criterion, optimizer, scheduler, lo
         # Save checkpoint
         if epc % save_after == 0:
             checkpoint_data = {
-                'model_state_dict': model.state_dict(),
-                'epoch': epc,
+                'model_state_dict': model.state_dict()
             }
             torch.save(checkpoint_data, os.path.join(logpath, f"checkpoint_{epc:03d}.pth"))
         

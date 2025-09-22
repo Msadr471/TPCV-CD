@@ -87,24 +87,6 @@ def evaluate(model, criterion, tool4metric, device, reference, testimg, mask):
 
     return it_loss
 
-def log_metrics(phase, epoch, loss, scores):
-    """Log metrics in a single line format"""
-    if isinstance(scores, dict) and 'raw_dict' in scores:
-        scores_dict = scores['raw_dict']
-        # For binary classification, we only care about class 1 (change)
-        precision = scores_dict.get('precision_1', 0.0)
-        recall = scores_dict.get('recall_1', 0.0)
-        iou = scores_dict.get('iou_1', 0.0)
-        f1 = scores_dict.get('F1_1', 0.0)
-        oa = scores_dict.get('acc', 0.0)
-        
-        print(f"E{epoch:03d} {phase[:4]}: Loss: {loss:.4f} OA: {oa:.4f} Prec: {precision:.4f} Rec: {recall:.4f} IoU: {iou:.4f} F1: {f1:.4f}")
-    else:
-        # Fallback
-        scores_dict = scores
-        print(f"E{epoch:03d} {phase[:4]}: Loss: {loss:.4f} | "
-              f"OA: {scores_dict.get('acc', 0.0):.4f}")
-
 def training_phase(epc, model, criterion, optimizer, dataset, device, tool4metric):
     tool4metric.clear()
     model.train()

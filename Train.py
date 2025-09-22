@@ -23,9 +23,9 @@ def parse_arguments():
                         help="Number of training epochs")
     parser.add_argument("--batch-size", type=int, default=4,
                         help="Batch size for training")
-    parser.add_argument("--learning-rate", type=float, default=0.001,
+    parser.add_argument("--learning-rate", type=float, default=0.01,
                         help="Learning rate for optimizer")
-    parser.add_argument("--weight-decay", type=float, default=0.005,
+    parser.add_argument("--weight-decay", type=float, default=0.0001,
                         help="Weight decay for optimizer")
     parser.add_argument("--optimizer", type=str, default="adamw", choices=["fadam", "adamw"],
                         help="Optimizer to use: fadam or adamw")
@@ -63,8 +63,7 @@ def create_criterion(args, loss_type='bce'):
 
 def create_optimizer(model, args, optimizer_type='adamw'):
     if optimizer_type == 'fadam':
-        return FAdam(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay,
-                    betas=(0.9, 0.999), clip=1, p=0.5, eps=1.e-8)
+        return FAdam(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
     elif optimizer_type == 'adamw':
         return torch.optim.AdamW(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
     raise ValueError(f"Unknown optimizer type: {optimizer_type}")
@@ -89,17 +88,22 @@ def evaluate(model, criterion, tool4metric, device, reference, testimg, mask):
     return it_loss
 
 def log_metrics(phase, epoch, loss, scores):
-    # Extract the raw scores dictionary from the new format
+    """Log metrics in a single line format"""
     if isinstance(scores, dict) and 'raw_dict' in scores:
         scores_dict = scores['raw_dict']
-        # Print the simplified formatted output
-        if 'formatted_output' in scores:
-            print(f"E{epoch:03d} {phase[:4]}: Loss: {loss:.4f} | {scores['formatted_output']}")
+        # For binary classification, we only care about class 1 (change)
+        precision = scores_dict.get('precision_1', 0.0)
+        recall = scores_dict.get('recall_1', 0.0)
+        iou = scores_dict.get('iou_1', 0.0)
+        f1 = scores_dict.get('F1_1', 0.0)
+        oa = scores_dict.get('acc', 0.0)
+        
+        print(f"E{epoch:03d} {phase[:4]}: Loss: {loss:.4f} OA: {oa:.4f} Prec: {precision:.4f} Rec: {recall:.4f} IoU: {iou:.4f} F1: {f1:.4f}")
     else:
-        # Fallback for old format
+        # Fallback
         scores_dict = scores
         print(f"E{epoch:03d} {phase[:4]}: Loss: {loss:.4f} | "
-              f"OA: {scores_dict.get('acc', 0.0):.4f} | mIoU: {scores_dict.get('miou', 0.0):.4f}")
+              f"OA: {scores_dict.get('acc', 0.0):.4f}")
 
 def training_phase(epc, model, criterion, optimizer, dataset, device, tool4metric):
     tool4metric.clear()
@@ -143,13 +147,15 @@ def train(dataset_train, dataset_val, model, criterion, optimizer, scheduler, lo
         
         # Training phase
         train_loss = training_phase(epc, model, criterion, optimizer, dataset_train, device, tool4metric)
-        scores = tool4metric.get_scores()
-        log_metrics("Training", epc, train_loss, scores)
+        train_scores = tool4metric.get_scores()
         
         # Validation phase
         val_loss = validation_phase(epc, model, criterion, dataset_val, device, tool4metric)
         val_scores = tool4metric.get_scores()
-        log_metrics("Validation", epc, val_loss, val_scores)
+        
+        # Print both training and validation metrics in one line
+        print(f"E{epc:03d} Train: Loss: {train_loss:.4f} {train_scores['formatted_output']}")
+        print(f"E{epc:03d} Valid: Loss: {val_loss:.4f} {val_scores['formatted_output']}")
         
         # Save checkpoint
         if epc % save_after == 0:

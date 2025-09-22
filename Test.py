@@ -70,37 +70,17 @@ def test_epoch(model, criterion, dataset, device, tool4metric):
     return epoch_loss / len(dataset)
 
 def print_results(args, loss, scores):
-    print("\n" + "="*60)
-    print("TEST RESULTS SUMMARY")
-    print("="*60)
-    print(f"Dataset: {args.dataset_type}")
-    print(f"Dataset path: {args.datapath}")
-    print(f"Model path: {args.modelpath}")
-    print(f"Backbone: {args.backbone}")
-    print(f"Batch size: {args.batch_size}")
-    print(f"Loss function: {args.loss_function.upper()}")
-    if args.loss_function == 'focal':
-        print(f"Focal loss alpha: {args.focal_alpha}, gamma: {args.focal_gamma}")
-    print(f"Final loss: {loss:.6f}")
-    print("-"*60)
-    
-    # Extract the raw scores dictionary
+    """Print test results in a single line format"""
     scores_dict = scores['raw_dict'] if 'raw_dict' in scores else scores
     
-    # Safely get metrics with default values of 0.0 if missing
-    metrics = {
-        "Loss": loss,
-        "Precision": scores_dict.get("precision_1", 0.0),
-        "Recall": scores_dict.get("recall_1", 0.0),
-        "OA": scores_dict["acc"],  # Overall accuracy should always be present
-        "IoU": scores_dict.get("iou_1", 0.0),
-        "F1": scores_dict.get("F1_1", 0.0)
-    }
+    # For binary classification, we only care about class 1 (change)
+    precision = scores_dict.get('precision_1', 0.0)
+    recall = scores_dict.get('recall_1', 0.0)
+    iou = scores_dict.get('iou_1', 0.0)
+    f1 = scores_dict.get('F1_1', 0.0)
+    oa = scores_dict.get('acc', 0.0)
     
-    for name, value in metrics.items():
-        print(f"{name}: {value:.4f}")
-    
-    print("="*60 + "\n")
+    print(f"Test Results: Loss: {loss:.4f} OA: {oa:.4f} Prec: {precision:.4f} Rec: {recall:.4f} IoU: {iou:.4f} F1: {f1:.4f}")
 
 def run():
     # Set random seeds for reproducibility

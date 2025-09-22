@@ -156,18 +156,14 @@ def cm2score(confusion_matrix):
 
 def format_metrics_output(scores_dict, n_class):
     """Format the metrics into a readable string output"""
-    output_lines = []
-    
-    # Main metrics
-    output_lines.append(f"OA: {scores_dict['acc']:.4f} | mIoU: {scores_dict['miou']:.4f} | mF1: {scores_dict['mf1']:.4f}")
-    
-    # Class-wise metrics (only show change class for binary segmentation)
-    if n_class >= 2:
-        output_lines.append(f"Change: IoU: {scores_dict.get('iou_1', 0.0):.4f} | F1: {scores_dict.get('F1_1', 0.0):.4f} | "
-                          f"Prec: {scores_dict.get('precision_1', 0.0):.4f} | Rec: {scores_dict.get('recall_1', 0.0):.4f}")
-    
+    # For binary classification, we only care about class 1 (change)
+    precision = scores_dict.get('precision_1', 0.0)
+    recall = scores_dict.get('recall_1', 0.0)
+    iou = scores_dict.get('iou_1', 0.0)
+    f1 = scores_dict.get('F1_1', 0.0)
+
     return {
-        'formatted_output': ' | '.join(output_lines),
+        'formatted_output': f"OA: {scores_dict['acc']:.4f} Prec: {precision:.4f} Rec: {recall:.4f} IoU: {iou:.4f} F1: {f1:.4f}",
         'raw_dict': scores_dict
     }
 

@@ -42,8 +42,8 @@ class ChangeClassifier(Module):
         #    MixingMaskAttentionBlock(48, 24, [24, 12, 6], [12, 6, 1]),
         #    MixingBlock(80, 40),
         #])
-        #up_dims = [(2, 40, 64), (2, 64, 64), (2, 64, 32)]
-        #self._classify = PixelwiseLinear([32, 16, 8], [16, 8, 1], Sigmoid())
+        #up_dims = [(2, 40, 48), (2, 48, 48), (2, 48, 24)]
+        #self._classify = PixelwiseLinear([24, 12, 6], [12, 6, 1], Sigmoid())
 
         # Initialize mixing blocks:
         self._first_mix = MixingMaskAttentionBlock(6, 3, [3, 10, 5], [10, 5, 1])

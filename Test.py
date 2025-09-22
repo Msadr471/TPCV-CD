@@ -6,11 +6,9 @@ from metrics.metric_tool import ConfuseMatrixMeter
 import argparse
 from focal_loss.focal_loss import FocalLoss
 import numpy as np
-import os
 import random
 from tqdm import tqdm
 from models.change_classifier import ChangeClassifier as Model
-
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Parameter for model testing.")
@@ -124,13 +122,14 @@ def run():
     param_count = sum(p.numel() for p in model.parameters())
     print(f"Number of model parameters: {param_count}")
     
-    # Load checkpoint
+    # Load checkpoint (only weights)
     print(f"Loading model from: {args.modelpath}")
     try:
         checkpoint = torch.load(args.modelpath, weights_only=True)
     except:
         checkpoint = torch.load(args.modelpath, weights_only=False)
     
+    # Load only the model weights
     model.load_state_dict(checkpoint['model_state_dict'])
     model = model.to(device)
     

@@ -6,13 +6,11 @@ import torch
 import gc
 import numpy as np
 import random
-import time
 from metrics.metric_tool import ConfuseMatrixMeter
 from models.change_classifier import ChangeClassifier as Model
 from torch.utils.data import DataLoader
 from focal_loss.focal_loss import FocalLoss
 from FAdam.fadam import FAdam
-from tensorboardX import SummaryWriter
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Parameter for data analysis and model training.")
@@ -81,7 +79,7 @@ def evaluate(model, criterion, tool4metric, device, reference, testimg, mask):
     
     return criterion(generated_mask, mask)
 
-def log_metrics(phase, epoch, loss, scores, writer):
+def log_metrics(phase, epoch, loss, scores):
     print(f"{phase} phase summary")
     print(f"Loss for epoch {epoch} is {loss}")
     
@@ -99,7 +97,6 @@ def log_metrics(phase, epoch, loss, scores, writer):
     }
     
     for name, value in metrics.items():
-        writer.add_scalar(f"{name}_{phase}/epoch", value, epoch)
         if name != "Loss":
             print(f"{name} for epoch {epoch} is {value:.4f}")
     
@@ -124,20 +121,11 @@ def train_epoch(model, criterion, optimizer, dataset, device, tool4metric, is_tr
     
     return epoch_loss / len(dataset)
 
-def train(dataset_train, dataset_val, model, criterion, optimizer, scheduler, logpath, writer, 
+def train(dataset_train, dataset_val, model, criterion, optimizer, scheduler, logpath, 
           epochs, save_after, device, training_args=None, dataset_name=None):
     
     model = model.to(device)
     tool4metric = ConfuseMatrixMeter(n_class=2)
-    start_time = time.time()
-    
-    best_metrics = {
-        'train_loss': float('inf'),
-        'val_loss': float('inf'),
-        'f1': 0,
-        'iou': 0,
-        'accuracy': 0
-    }
     
     for epc in range(epochs):
         print(f"Epoch {epc}")
@@ -145,46 +133,22 @@ def train(dataset_train, dataset_val, model, criterion, optimizer, scheduler, lo
         # Training phase
         train_loss = train_epoch(model, criterion, optimizer, dataset_train, device, tool4metric, is_training=True)
         scores = tool4metric.get_scores()
-        log_metrics("Train", epc, train_loss, scores, writer)
-        
-        if train_loss < best_metrics['train_loss']:
-            best_metrics['train_loss'] = train_loss
+        log_metrics("Train", epc, train_loss, scores)
         
         # Validation phase
         val_loss = train_epoch(model, criterion, optimizer, dataset_val, device, tool4metric, is_training=False)
         val_scores = tool4metric.get_scores()
-        log_metrics("Validation", epc, val_loss, val_scores, writer)
+        log_metrics("Validation", epc, val_loss, val_scores)
         
-        # Update best metrics
-        val_scores_dict = val_scores['raw_dict'] if 'raw_dict' in val_scores else val_scores
-        for metric, value in [('val_loss', val_loss), 
-                            ('f1', val_scores_dict.get("F1_1", 0.0)), 
-                            ('iou', val_scores_dict.get("iou_1", 0.0)), 
-                            ('accuracy', val_scores_dict["acc"])]:
-            if (metric == 'val_loss' and value < best_metrics[metric]) or \
-               (metric != 'val_loss' and value > best_metrics[metric]):
-                best_metrics[metric] = value
-        
-        # Save checkpoint
+        # Save checkpoint (only model weights)
         if epc % save_after == 0:
             checkpoint_data = {
                 'model_state_dict': model.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-                'scheduler_state_dict': scheduler.state_dict(),
                 'epoch': epc,
-                'best_metrics': best_metrics,
             }
             torch.save(checkpoint_data, os.path.join(logpath, f"checkpoint_{epc:03d}.pth"))
         
         scheduler.step()
-
-def print_model_memory_usage(model):
-    total_params = 0
-    for name, param in model.named_parameters():
-        if param.requires_grad:
-            total_params += param.numel()
-            print(f"{name}: {param.numel():,} parameters")
-    print(f"Total trainable parameters: {total_params:,}")
 
 def run():
     torch.manual_seed(42)
@@ -192,7 +156,6 @@ def run():
     np.random.seed(42)
     
     args = parse_arguments()
-    writer = SummaryWriter(log_dir=args.log_path)
     
     # Load datasets
     train_data = dtset.MyDataset(args.datapath, "train")
@@ -226,10 +189,9 @@ def run():
     
     # Start training
     train(train_loader, val_loader, model, criterion, optimizer, scheduler, args.log_path, 
-          writer, args.epochs, 1, device, vars(args), 
+          args.epochs, 1, device, vars(args), 
           os.path.basename(os.path.normpath(args.datapath)))
     
-    writer.close()
 
 if __name__ == "__main__":
     run()

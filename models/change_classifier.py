@@ -26,17 +26,42 @@ class ChangeClassifier(Module):
             weights, output_layer_bkbn, freeze_backbone
         )
 
-        # Initialize mixing blocks (hardcoded for efficientnet_b4)
+        #EFFICIENTNET_B4:
+        #self._mixing_mask = ModuleList([
+        #    MixingMaskAttentionBlock(48, 24, [24, 12, 6], [12, 6, 1]),
+        #    MixingMaskAttentionBlock(64, 32, [32, 16, 8], [16, 8, 1]),
+        #    MixingBlock(112, 56),
+        #])
+        #up_dims = [(2, 56, 64), (2, 64, 64), (2, 64, 32)]
+        #self._classify = PixelwiseLinear([32, 16, 8], [16, 8, 1], Sigmoid())
+
+        #EFFICIENTNET_B1:
+        #self._mixing_mask = ModuleList([
+        #    MixingMaskAttentionBlock(32, 16, [16, 8, 4], [8, 4, 1]),
+        #    MixingMaskAttentionBlock(48, 24, [24, 12, 6], [12, 6, 1]),
+        #    MixingBlock(80, 40),
+        #])
+        #up_dims = [(2, 40, 64), (2, 64, 64), (2, 64, 32)]
+        #self._classify = PixelwiseLinear([32, 16, 8], [16, 8, 1], Sigmoid())
+
+        # Initialize mixing blocks:
         self._first_mix = MixingMaskAttentionBlock(6, 3, [3, 10, 5], [10, 5, 1])
-        self._mixing_mask = ModuleList([
-            MixingMaskAttentionBlock(48, 24, [24, 12, 6], [12, 6, 1]),
-            MixingMaskAttentionBlock(64, 32, [32, 16, 8], [16, 8, 1]),
-            MixingBlock(112, 56),
-        ])
-        up_dims = [(2, 56, 64), (2, 64, 64), (2, 64, 32)]
+        self._mixing_mask = ModuleList(
+            [
+                MixingMaskAttentionBlock(48, 24, [24, 12, 6], [12, 6, 1]),
+                MixingMaskAttentionBlock(64, 32, [32, 16, 8], [16, 8, 1]),
+                MixingBlock(112, 56),
+            ]
+        )
 
         # Initialize Upsampling blocks:
-        self._up = ModuleList([UpMask(*dims) for dims in up_dims])
+        self._up = ModuleList(
+            [
+                UpMask(2, 56, 64),
+                UpMask(2, 64, 64),
+                UpMask(2, 64, 32),
+            ]
+        )
 
         # Final classification layer:
         self._classify = PixelwiseLinear([32, 16, 8], [16, 8, 1], Sigmoid())
@@ -52,7 +77,7 @@ class ChangeClassifier(Module):
         features = [self._first_mix(ref, test)]
         for num, layer in enumerate(self._backbone):
             ref, test = layer(ref), layer(test)
-            if num != 0:  # Skip layer 0 (the stem)
+            if num != 0:
                 features.append(self._mixing_mask[num - 1](ref, test))
         return features
 
@@ -64,31 +89,22 @@ class ChangeClassifier(Module):
 
 
 def _get_backbone(
-    weights, output_layer_bkbn, freeze_backbone
+    bkbn_name, weights, output_layer_bkbn, freeze_backbone
 ) -> ModuleList:
-    # Hardcoded to efficientnet_b4
-    with torch.no_grad():  # Prevent tracking gradients for the backbone
-        model = torchvision.models.efficientnet_b4(weights=weights)
-        features = model.features
-        
-        # Slicing it:
-        derived_model = ModuleList([])
-        for name, layer in features.named_children():
-            derived_model.append(layer)
-            if name == output_layer_bkbn:
-                break
+    # The whole model:
+    entire_model = getattr(torchvision.models, bkbn_name)(
+        weights=weights
+    ).features
 
-        # Freezing the backbone weights:
-        if freeze_backbone:
-            for param in derived_model.parameters():
-                param.requires_grad = False
-        
-        # Clear memory by deleting the full model and forcing garbage collection
-        del model
-        del features
-        import gc
-        gc.collect()
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
-            
+    # Slicing it:
+    derived_model = ModuleList([])
+    for name, layer in entire_model.named_children():
+        derived_model.append(layer)
+        if name == output_layer_bkbn:
+            break
+
+    # Freezing the backbone weights:
+    if freeze_backbone:
+        for param in derived_model.parameters():
+            param.requires_grad = False
     return derived_model

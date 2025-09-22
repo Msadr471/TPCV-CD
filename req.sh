@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # pip install -qq thop
-pip install -qq tensorboardX
+# pip install -qq tensorboardX
 pip install -qq albumentations
 
 cd /content/

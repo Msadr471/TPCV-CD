@@ -8,6 +8,7 @@ from torch.nn import Module, ModuleList, Sigmoid
 class ChangeClassifier(Module):
     def __init__(
         self,
+        bkbn_name="efficientnet_b4",
         weights=None,
         output_layer_bkbn="3",
         freeze_backbone=False,
@@ -23,7 +24,7 @@ class ChangeClassifier(Module):
 
         # Load the backbone (hardcoded to efficientnet_b4)
         self._backbone = _get_backbone(
-            weights, output_layer_bkbn, freeze_backbone
+            bkbn_name, weights, output_layer_bkbn, freeze_backbone
         )
 
         #EFFICIENTNET_B4:

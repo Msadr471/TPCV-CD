@@ -70,14 +70,23 @@ def create_optimizer(model, args, optimizer_type='adamw'):
     raise ValueError(f"Unknown optimizer type: {optimizer_type}")
 
 def evaluate(model, criterion, tool4metric, device, reference, testimg, mask):
-    reference, testimg, mask = reference.to(device).float(), testimg.to(device).float(), mask.to(device).float()
+    # Reverted to training.py approach: convert to float only when needed
+    reference = reference.to(device).float()
+    testimg = testimg.to(device).float()
+    mask = mask.to(device).float()
+
+    # Evaluating the model:
     generated_mask = model(reference, testimg).squeeze(1)
-    
+
+    # Loss calculation:
+    it_loss = criterion(generated_mask, mask)
+
+    # Feeding the comparison metric tool:
     bin_genmask = (generated_mask.to("cpu") > 0.5).detach().numpy().astype(int)
     mask_np = mask.to("cpu").numpy().astype(int)
     tool4metric.update_cm(pr=bin_genmask, gt=mask_np)
-    
-    return criterion(generated_mask, mask)
+
+    return it_loss
 
 def log_metrics(phase, epoch, loss, scores):
     print(f"{phase} phase summary")
@@ -88,7 +97,6 @@ def log_metrics(phase, epoch, loss, scores):
     
     # Safely get metrics with default values of 0.0 if missing
     metrics = {
-        "Loss": loss,
         "Precision": scores_dict.get("precision_1", 0.0),
         "Recall": scores_dict.get("recall_1", 0.0),
         "OA": scores_dict["acc"],  # Overall accuracy should always be present
@@ -97,28 +105,39 @@ def log_metrics(phase, epoch, loss, scores):
     }
     
     for name, value in metrics.items():
-        if name != "Loss":
-            print(f"{name} for epoch {epoch} is {value:.4f}")
+        print(f"{name} for epoch {epoch} is {value:.4f}")
     
     print()
 
-def train_epoch(model, criterion, optimizer, dataset, device, tool4metric, is_training=True):
-    model.train() if is_training else model.eval()
+def training_phase(epc, model, criterion, optimizer, dataset, device, tool4metric):
+    tool4metric.clear()
+    model.train()
+    epoch_loss = 0.0
+    
+    for (reference, testimg), mask in dataset:
+        # Reset the gradients:
+        optimizer.zero_grad()
+
+        # Loss gradient descend step:
+        it_loss = evaluate(model, criterion, tool4metric, device, reference, testimg, mask)
+        it_loss.backward()  # Direct backward call like training.py
+        optimizer.step()
+
+        # Track metrics:
+        epoch_loss += it_loss.to("cpu").detach().numpy()
+
+    return epoch_loss / len(dataset)
+
+def validation_phase(epc, model, criterion, dataset, device, tool4metric):
+    model.eval()
     epoch_loss = 0.0
     tool4metric.clear()
     
-    for (reference, testimg), mask in dataset:
-        if is_training:
-            optimizer.zero_grad()
-        
-        loss = evaluate(model, criterion, tool4metric, device, reference, testimg, mask)
-        
-        if is_training:
-            loss.backward()
-            optimizer.step()
-        
-        epoch_loss += loss.to("cpu").detach().numpy()
-    
+    with torch.no_grad():
+        for (reference, testimg), mask in dataset:
+            it_loss = evaluate(model, criterion, tool4metric, device, reference, testimg, mask)
+            epoch_loss += it_loss.to("cpu").detach().numpy()
+
     return epoch_loss / len(dataset)
 
 def train(dataset_train, dataset_val, model, criterion, optimizer, scheduler, logpath, 
@@ -131,16 +150,16 @@ def train(dataset_train, dataset_val, model, criterion, optimizer, scheduler, lo
         print(f"Epoch {epc}")
         
         # Training phase
-        train_loss = train_epoch(model, criterion, optimizer, dataset_train, device, tool4metric, is_training=True)
+        train_loss = training_phase(epc, model, criterion, optimizer, dataset_train, device, tool4metric)
         scores = tool4metric.get_scores()
-        log_metrics("Train", epc, train_loss, scores)
+        log_metrics("Training", epc, train_loss, scores)
         
         # Validation phase
-        val_loss = train_epoch(model, criterion, optimizer, dataset_val, device, tool4metric, is_training=False)
+        val_loss = validation_phase(epc, model, criterion, dataset_val, device, tool4metric)
         val_scores = tool4metric.get_scores()
         log_metrics("Validation", epc, val_loss, val_scores)
         
-        # Save checkpoint (only model weights)
+        # Save checkpoint
         if epc % save_after == 0:
             checkpoint_data = {
                 'model_state_dict': model.state_dict(),
@@ -166,26 +185,16 @@ def run():
     device = torch.device(f'cuda:{args.gpu_id}' if torch.cuda.is_available() else 'cpu')
     print(f'Current Device: {device}\n')
     
-    # Clear cache before training
-    torch.cuda.empty_cache()
-    
-    # Use memory-efficient practices
-    torch.backends.cudnn.benchmark = True  # Optimizes convolution algorithms
+    # Clear cache before training (optional, can be removed if causing issues)
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
     
     model = Model()
     print(f"Number of model parameters: {sum(p.numel() for p in model.parameters())}\n")
     
-    gc.collect()
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-    
     criterion = create_criterion(args, args.loss_function)
     optimizer = create_optimizer(model, args, args.optimizer)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
-    
-    # Copy configurations
-    for folder in ["models", "FAdam", "focal_loss", "dataset", "metrics"]:
-        shutil.copytree(f"./{folder}", os.path.join(args.log_path, folder), dirs_exist_ok=True)
     
     # Start training
     train(train_loader, val_loader, model, criterion, optimizer, scheduler, args.log_path, 
